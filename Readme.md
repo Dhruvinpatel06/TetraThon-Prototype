@@ -1,4 +1,4 @@
-`# ArgiTech — Precision Crop Advisory & Post-Harvest Planner
+# ArgiTech — Precision Crop Advisory & Post-Harvest Planner
 
 An integrated platform for smallholder farmers: personalised crop advisories and post-harvest decision support, built for the ArgiTech pre-screening round.
 
@@ -20,7 +20,7 @@ India's 85%+ smallholder farmers lack personalised agronomic advice, and 15–20
 | Frontend | React 18, Vite, Tailwind CSS 3 |
 | Backend | Python 3.11+, FastAPI, SQLAlchemy, SQLite |
 | Charts | Recharts |
-| Hosting | Vercel (frontend), Render (backend) |
+| Hosting | TBD |
 
 ## Architecture
 
@@ -30,11 +30,9 @@ flowchart LR
     B --> C[(SQLite)]
     B --> D[Rule Engine<br/>JSON Tables]
     B --> E[Weather Adapter<br/>Mocked JSON]
-    B --> F[Mandi Price Adapter<br/>Synthetic CSV]
-    B --> G[Spoilage Model]
-    B --> H[Transport Cost Model]
-    A -.-> I[Vercel Deploy]
-    B -.-> J[Render Deploy]
+    B --> F[Coming Soon<br/>Mandi Price, Spoilage, Transport]
+    A -.-> I[Deploy TBD]
+    B -.-> J[Deploy TBD]
 ```
 
 ## Project Structure
@@ -52,16 +50,33 @@ Docs/             # Execution plans, user flows, architecture
 
 ## Setup
 
+### Prerequisites
+
+- **Python 3.11+**
+- **Node.js 18+**
+
+All commands run from the `TetraThon-Prototype/` project root.
+
 ### Backend
 
 ```bash
-cd Backend
-pip install -r requirements.txt
-uvicorn App.main:app --reload
-# → http://localhost:8000/docs
+# 1. Create & activate virtual environment (one time)
+python -m venv venv
+.\venv\Scripts\Activate     # Windows
+source venv/bin/activate    # Mac/Linux
+
+# 2. Install dependencies
+pip install -r Backend\requirements.txt
+
+# 3. Start the API server
+uvicorn App.main:app --reload --port 8000
+# → http://localhost:8000
+# → http://localhost:8000/docs (Swagger UI)
 ```
 
 ### Frontend
+
+Open a **separate terminal** — keep the backend running.
 
 ```bash
 cd Frontend
@@ -70,9 +85,22 @@ npm run dev
 # → http://localhost:5173
 ```
 
+The Vite dev server proxies API calls (`/advisory`, `/locations`, etc.) to `http://localhost:8000` automatically.
+
+### Verify
+
+```bash
+# Backend health check
+curl http://localhost:8000/health
+# → {"status":"OK"}
+
+# Open http://localhost:5173 in your browser
+# Click "Get Crop Advisory" → select crop + location → submit
+```
+
 ## Committers
 
-- **Om B Patel** — `ombpatel`
+- **Om B Patel** — `byt-ctrl`
 - **Dhruvin Patel** — `Dhruvinpatel06`
 
 Built for **ArgiTech** — AgriTech Track, Navrachana University.
