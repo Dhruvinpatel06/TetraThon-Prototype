@@ -10,18 +10,20 @@ def generate_prices():
     crops = ["Cotton", "Wheat", "Groundnut", "Tomato"]
     markets = ["Ahmedabad APMC", "Vadodara APMC", "Surat APMC", "Rajkot APMC", "Anand APMC"]
     
+    # Tuned trends so that Store and Transport sometimes win
     crop_configs = {
-        "Cotton": {"base": 6500, "trend": 10.0, "var": 50, "min": 6000, "max": 8500},
-        "Wheat": {"base": 2300, "trend": 4.0, "var": 20, "min": 2200, "max": 3000},
-        "Groundnut": {"base": 5800, "trend": 8.0, "var": 40, "min": 5500, "max": 7500},
-        "Tomato": {"base": 1500, "trend": 6.0, "var": 30, "min": 1200, "max": 2800}
+        "Cotton": {"base": 6500, "trend": 35.0, "var": 50, "min": 6000, "max": 9500},
+        "Wheat": {"base": 2300, "trend": 45.0, "var": 20, "min": 2200, "max": 6500},
+        "Groundnut": {"base": 5800, "trend": 30.0, "var": 40, "min": 5500, "max": 8500},
+        "Tomato": {"base": 1500, "trend": 5.0, "var": 30, "min": 1200, "max": 2800}
     }
     
+    # We introduce higher variance offsets between markets to make Transport win sometimes
     market_offsets = {
-        "Ahmedabad APMC": 100,
-        "Vadodara APMC": -50,
-        "Surat APMC": 150,
-        "Rajkot APMC": 50,
+        "Ahmedabad APMC": 400,
+        "Vadodara APMC": -200,
+        "Surat APMC": 600,
+        "Rajkot APMC": 200,
         "Anand APMC": 0
     }
     
