@@ -5,7 +5,7 @@ from App.adapters.weather import get_forecast
 
 # Paths
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
-RULES_DIR = BASE_DIR / "Rules"
+RULES_DIR = BASE_DIR / "data"
 
 # Water depth mapping per stage (in cm)
 STAGE_WATER_DEPTH = {
@@ -80,7 +80,7 @@ def generate_advisories(
     try:
         irrigation_data = load_rules("irrigation_rules.json")
         fertiliser_data = load_rules("fertiliser_rules.json")
-        pest_data = load_rules("pest_windows.json")
+        pest_data = load_rules("pest_rules.json")
     except Exception as e:
         raise RuntimeError(f"Failed to load rule JSON files: {str(e)}")
 

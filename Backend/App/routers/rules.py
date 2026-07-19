@@ -36,7 +36,7 @@ def get_rules(
     try:
         irrigation_data = load_rules("irrigation_rules.json")
         fertiliser_data = load_rules("fertiliser_rules.json")
-        pest_data = load_rules("pest_windows.json")
+        pest_data = load_rules("pest_rules.json")
     except Exception as e:
         raise HTTPException(
             status_code=500,
