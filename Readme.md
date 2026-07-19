@@ -42,8 +42,7 @@ flowchart LR
 ```
 Backend/
 ├── App/          # FastAPI app — routes, models, engine, adapters
-├── Rules/        # Irrigation, fertiliser, pest rule tables (JSON)
-└── data/         # Synthetic market-price and weather data
+└── data/         # Rules (JSON) and mocked weather/market-price data
 Frontend/
 ├── src/
 │   ├── components/   # UI components
