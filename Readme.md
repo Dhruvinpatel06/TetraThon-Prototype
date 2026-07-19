@@ -59,20 +59,36 @@ All commands run from the `TetraThon-Prototype/` project root.
 
 ### Backend
 
-```bash
-# 1. Create & activate virtual environment (one time)
-python -m venv venv
-.\venv\Scripts\Activate     # Windows
-source venv/bin/activate    # Mac/Linux
+Run these commands from the `Backend/` directory:
 
-# 2. Install dependencies
-pip install -r Backend\requirements.txt
+1. **Create and activate a virtual environment**:
+   Using Python 3.11 or 3.12 is highly recommended to ensure pre-compiled binary wheel availability.
+   ```bash
+   cd Backend
+   python -m venv .venv
 
-# 3. Start the API server
-uvicorn App.main:app --reload --port 8000
-# → http://localhost:8000
-# → http://localhost:8000/docs (Swagger UI)
-```
+   # Activate on Windows (CMD or PowerShell):
+   .venv\Scripts\activate
+
+   # Activate on macOS/Linux:
+   source .venv/bin/activate
+   ```
+
+2. **Install dependencies**:
+   If your environment lacks C++ build tools or is running a pre-release/experimental version of Python (like Python 3.14), use the fallback command to force-install pre-built binary wheels:
+   ```bash
+   # Standard installation:
+   pip install -r requirements.txt
+
+   # Fallback (resolves linker 'link.exe' or C++ compiler build errors):
+   pip install -r requirements.txt --only-binary :all:
+   ```
+
+3. **Start the API development server**:
+   ```bash
+   uvicorn App.main:app --reload --port 8000
+   # → Swagger Docs: http://localhost:8000/docs
+   ```
 
 ### Frontend
 
