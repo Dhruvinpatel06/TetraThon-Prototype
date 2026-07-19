@@ -51,7 +51,7 @@ Before building anything, read the current state to avoid double-work.
 | `Backend/Rules/fertiliser_rules.json` | ✅ Done | 4 crops × 4 stages, N-P-K values |
 | `Backend/Rules/pest_windows.json` | ✅ Done | 4 crops × 4 stages, pest/disease risks |
 | `Frontend/` | ✅ Done | React + Vite + Tailwind, fetches health/locations/crops |
-| `README.md` | ❌ Empty | Needs content (defer to Chunk 4) |
+| `README.md` | ✅ Done | Completed in Chuck 2 |
 | Deployment | ❌ Not done | No Vercel/Render deployment yet |
 
 ### 1.2 What You Must NOT Change

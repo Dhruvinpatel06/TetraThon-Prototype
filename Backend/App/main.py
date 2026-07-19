@@ -5,8 +5,13 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 from .database import Base, engine, get_db
 from .seed import seed
+from .routers import advisory, rules
 
 app = FastAPI(title="TetraTHON AgriTech API")
+
+app.include_router(advisory.router)
+app.include_router(rules.router)
+
 
 app.add_middleware(
     CORSMiddleware,
