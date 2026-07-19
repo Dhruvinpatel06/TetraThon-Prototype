@@ -25,4 +25,5 @@ export const api = {
   crops: () => get('/crops'),
   postAdvisory: (data) => post('/advisory', data),
   getRules: (cropName) => get(`/api/rules?crop_name=${encodeURIComponent(cropName)}`),
+  postPostHarvest: (data) => post('/post-harvest', data),
 }
