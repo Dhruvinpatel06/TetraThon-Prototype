@@ -1,0 +1,27 @@
+{
+  "_notes": "risk_level is default risk in that stage before weather is factored in. Chunk 2 should bump risk up if weather matches raises_risk_if.",
+  "Cotton": [
+    {"stage": "germination", "days_range": [0, 20], "pest_or_disease": "Damping off", "risk_level": "Low", "raises_risk_if": ["waterlogged", "high_humidity"]},
+    {"stage": "vegetative", "days_range": [21, 70], "pest_or_disease": "Aphids / Jassids", "risk_level": "Medium", "raises_risk_if": ["hot_dry"]},
+    {"stage": "flowering_boll", "days_range": [71, 140], "pest_or_disease": "Pink Bollworm", "risk_level": "High", "raises_risk_if": ["humid", "warm_night"]},
+    {"stage": "maturity", "days_range": [141, 180], "pest_or_disease": "Boll rot", "risk_level": "Low", "raises_risk_if": ["rain_expected"]}
+  ],
+  "Wheat": [
+    {"stage": "germination", "days_range": [0, 15], "pest_or_disease": "Termites", "risk_level": "Low", "raises_risk_if": ["dry_soil"]},
+    {"stage": "tillering", "days_range": [16, 45], "pest_or_disease": "Aphids", "risk_level": "Medium", "raises_risk_if": ["cool_humid"]},
+    {"stage": "flowering_grain_fill", "days_range": [46, 100], "pest_or_disease": "Rust (yellow/brown)", "risk_level": "High", "raises_risk_if": ["humid", "moderate_temp"]},
+    {"stage": "maturity", "days_range": [101, 120], "pest_or_disease": "Storage pests (post-cut)", "risk_level": "Low", "raises_risk_if": ["rain_expected"]}
+  ],
+  "Groundnut": [
+    {"stage": "germination", "days_range": [0, 15], "pest_or_disease": "Collar rot", "risk_level": "Low", "raises_risk_if": ["waterlogged"]},
+    {"stage": "vegetative", "days_range": [16, 40], "pest_or_disease": "Leaf miner", "risk_level": "Medium", "raises_risk_if": ["hot_dry"]},
+    {"stage": "flowering_pegging", "days_range": [41, 80], "pest_or_disease": "Tikka leaf spot", "risk_level": "High", "raises_risk_if": ["humid", "rain_expected"]},
+    {"stage": "pod_maturity", "days_range": [81, 110], "pest_or_disease": "Pod borer", "risk_level": "Medium", "raises_risk_if": ["warm_night"]}
+  ],
+  "Tomato": [
+    {"stage": "germination", "days_range": [0, 10], "pest_or_disease": "Damping off", "risk_level": "Medium", "raises_risk_if": ["waterlogged", "high_humidity"]},
+    {"stage": "vegetative", "days_range": [11, 35], "pest_or_disease": "Whitefly", "risk_level": "Medium", "raises_risk_if": ["hot_dry"]},
+    {"stage": "flowering_fruiting", "days_range": [36, 65], "pest_or_disease": "Fruit borer / Late blight", "risk_level": "High", "raises_risk_if": ["humid", "rain_expected"]},
+    {"stage": "maturity", "days_range": [66, 75], "pest_or_disease": "Fruit cracking", "risk_level": "Low", "raises_risk_if": ["rain_expected"]}
+  ]
+}

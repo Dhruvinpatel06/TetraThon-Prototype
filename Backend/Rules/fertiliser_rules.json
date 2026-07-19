@@ -1,0 +1,27 @@
+{
+  "_notes": "N-P-K in kg/acre, simplified split-dose schedule. Not certified agronomy advice — flag that in UI copy.",
+  "Cotton": [
+    {"stage": "germination", "days_range": [0, 20], "npk_kg_per_acre": {"N": 20, "P": 20, "K": 0}, "note": "Basal dose at sowing"},
+    {"stage": "vegetative", "days_range": [21, 70], "npk_kg_per_acre": {"N": 25, "P": 0, "K": 0}, "note": "First top dressing"},
+    {"stage": "flowering_boll", "days_range": [71, 140], "npk_kg_per_acre": {"N": 20, "P": 0, "K": 15}, "note": "Boosts boll formation"},
+    {"stage": "maturity", "days_range": [141, 180], "npk_kg_per_acre": {"N": 0, "P": 0, "K": 0}, "note": "No further fertiliser needed"}
+  ],
+  "Wheat": [
+    {"stage": "germination", "days_range": [0, 15], "npk_kg_per_acre": {"N": 20, "P": 25, "K": 10}, "note": "Basal dose"},
+    {"stage": "tillering", "days_range": [16, 45], "npk_kg_per_acre": {"N": 20, "P": 0, "K": 0}, "note": "First top dressing at tillering"},
+    {"stage": "flowering_grain_fill", "days_range": [46, 100], "npk_kg_per_acre": {"N": 15, "P": 0, "K": 0}, "note": "Second top dressing"},
+    {"stage": "maturity", "days_range": [101, 120], "npk_kg_per_acre": {"N": 0, "P": 0, "K": 0}, "note": "No further fertiliser needed"}
+  ],
+  "Groundnut": [
+    {"stage": "germination", "days_range": [0, 15], "npk_kg_per_acre": {"N": 8, "P": 16, "K": 8}, "note": "Basal dose, low N (legume)"},
+    {"stage": "vegetative", "days_range": [16, 40], "npk_kg_per_acre": {"N": 0, "P": 0, "K": 0}, "note": "None needed, nitrogen-fixing"},
+    {"stage": "flowering_pegging", "days_range": [41, 80], "npk_kg_per_acre": {"N": 0, "P": 0, "K": 10}, "note": "Gypsum/K helps pod filling"},
+    {"stage": "pod_maturity", "days_range": [81, 110], "npk_kg_per_acre": {"N": 0, "P": 0, "K": 0}, "note": "No further fertiliser needed"}
+  ],
+  "Tomato": [
+    {"stage": "germination", "days_range": [0, 10], "npk_kg_per_acre": {"N": 15, "P": 25, "K": 10}, "note": "Basal dose"},
+    {"stage": "vegetative", "days_range": [11, 35], "npk_kg_per_acre": {"N": 15, "P": 0, "K": 10}, "note": "First top dressing"},
+    {"stage": "flowering_fruiting", "days_range": [36, 65], "npk_kg_per_acre": {"N": 10, "P": 0, "K": 20}, "note": "K boosts fruit quality"},
+    {"stage": "maturity", "days_range": [66, 75], "npk_kg_per_acre": {"N": 0, "P": 0, "K": 0}, "note": "No further fertiliser needed"}
+  ]
+}

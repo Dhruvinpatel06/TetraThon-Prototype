@@ -1,0 +1,27 @@
+{
+  "_notes": "Growth stage derived from days-since-sowing / typical_duration_days. interval_days = how often to irrigate; skip_if_rain_expected suppresses the advisory if rain is forecast within skip_window_days.",
+  "Cotton": [
+    {"stage": "germination", "days_range": [0, 20], "interval_days": 4, "skip_if_rain_expected": true, "skip_window_days": 2},
+    {"stage": "vegetative", "days_range": [21, 70], "interval_days": 7, "skip_if_rain_expected": true, "skip_window_days": 3},
+    {"stage": "flowering_boll", "days_range": [71, 140], "interval_days": 5, "skip_if_rain_expected": true, "skip_window_days": 2},
+    {"stage": "maturity", "days_range": [141, 180], "interval_days": 10, "skip_if_rain_expected": true, "skip_window_days": 4}
+  ],
+  "Wheat": [
+    {"stage": "germination", "days_range": [0, 15], "interval_days": 6, "skip_if_rain_expected": true, "skip_window_days": 3},
+    {"stage": "tillering", "days_range": [16, 45], "interval_days": 12, "skip_if_rain_expected": true, "skip_window_days": 4},
+    {"stage": "flowering_grain_fill", "days_range": [46, 100], "interval_days": 10, "skip_if_rain_expected": true, "skip_window_days": 3},
+    {"stage": "maturity", "days_range": [101, 120], "interval_days": 20, "skip_if_rain_expected": true, "skip_window_days": 5}
+  ],
+  "Groundnut": [
+    {"stage": "germination", "days_range": [0, 15], "interval_days": 5, "skip_if_rain_expected": true, "skip_window_days": 2},
+    {"stage": "vegetative", "days_range": [16, 40], "interval_days": 8, "skip_if_rain_expected": true, "skip_window_days": 3},
+    {"stage": "flowering_pegging", "days_range": [41, 80], "interval_days": 6, "skip_if_rain_expected": true, "skip_window_days": 2},
+    {"stage": "pod_maturity", "days_range": [81, 110], "interval_days": 10, "skip_if_rain_expected": true, "skip_window_days": 4}
+  ],
+  "Tomato": [
+    {"stage": "germination", "days_range": [0, 10], "interval_days": 2, "skip_if_rain_expected": true, "skip_window_days": 1},
+    {"stage": "vegetative", "days_range": [11, 35], "interval_days": 4, "skip_if_rain_expected": true, "skip_window_days": 2},
+    {"stage": "flowering_fruiting", "days_range": [36, 65], "interval_days": 3, "skip_if_rain_expected": true, "skip_window_days": 1},
+    {"stage": "maturity", "days_range": [66, 75], "interval_days": 5, "skip_if_rain_expected": true, "skip_window_days": 2}
+  ]
+}
