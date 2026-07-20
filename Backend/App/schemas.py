@@ -31,9 +31,9 @@ class AdvisoryInput(BaseModel):
 
 
 class AdvisoryItem(BaseModel):
-    type: str
+    type: Literal["irrigation", "fertiliser", "pest"]
     title: str
-    confidence: str  # "High" | "Medium" | "Low"
+    confidence: Literal["High", "Medium", "Low"]
     plain_text: str
     details: dict | None = None
 

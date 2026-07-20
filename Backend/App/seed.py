@@ -1,6 +1,6 @@
-from .database import Base, engine, SessionLocal
+from .database import SessionLocal
 from .models import Location, Crop
-
+ 
 LOCATIONS = [
     {"name": "Vadodara", "state": "Gujarat", "latitude": 22.3072, "longitude": 73.1812},
     {"name": "Anand", "state": "Gujarat", "latitude": 22.5645, "longitude": 72.9289},
@@ -18,7 +18,6 @@ CROPS = [
 
 
 def seed():
-    Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         if db.query(Location).count() == 0:

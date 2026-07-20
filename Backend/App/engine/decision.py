@@ -1,10 +1,11 @@
-import os
 import csv
 import datetime
+from pathlib import Path
 from .transport import MARKETS, haversine, transport_cost
 from .spoilage import compute_spoilage
 
-CSV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data", "mandi_prices.csv"))
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+CSV_PATH = BASE_DIR / "data" / "mandi_prices.csv"
 
 # Module-level cache: key is (crop, market), value is list of {"date": date, "price": price, "price_per_quintal": price}
 _prices_cache = {}
@@ -23,7 +24,7 @@ def load_prices(crop: str, market: str) -> list[dict]:
     if cache_key in _prices_cache:
         return _prices_cache[cache_key]
         
-    if not os.path.exists(CSV_PATH):
+    if not CSV_PATH.exists():
         raise FileNotFoundError(f"CSV file not found at {CSV_PATH}")
         
     # If cache is empty, load everything in one pass to populate the cache
