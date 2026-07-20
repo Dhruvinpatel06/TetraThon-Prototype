@@ -10,9 +10,15 @@ router = APIRouter()
 
 @router.post("/post-harvest", response_model=schemas.PostHarvestOutput)
 def create_post_harvest_plan(payload: schemas.PostHarvestInput, db: Session = Depends(get_db)):
+    if not payload.location_name.strip() or not payload.crop_name.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="location_name and crop_name cannot be empty."
+        )
+
     # 1. Look up location in DB -> 404 if not found
     location = db.query(models.Location).filter(
-        models.Location.name == payload.location_name
+        models.Location.name.ilike(payload.location_name.strip())
     ).first()
     if not location:
         raise HTTPException(
@@ -22,7 +28,7 @@ def create_post_harvest_plan(payload: schemas.PostHarvestInput, db: Session = De
 
     # 2. Look up crop in DB -> 404 if not found
     crop = db.query(models.Crop).filter(
-        models.Crop.name == payload.crop_name
+        models.Crop.name.ilike(payload.crop_name.strip())
     ).first()
     if not crop:
         raise HTTPException(

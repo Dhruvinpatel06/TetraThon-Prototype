@@ -18,7 +18,7 @@ def get_rules(
     Returns all 3 rule tables (irrigation, fertiliser, pest) for the specified crop,
     merged into one response. Supports lookup by crop_id or crop_name.
     """
-    if crop_id is None and crop_name is None:
+    if crop_id is None and (crop_name is None or not crop_name.strip()):
         raise HTTPException(
             status_code=400,
             detail="Provide either crop_id or crop_name query parameter."
@@ -29,7 +29,7 @@ def get_rules(
         crop = db.query(models.Crop).filter(models.Crop.id == crop_id).first()
     else:
         crop = db.query(models.Crop).filter(
-            models.Crop.name == crop_name.strip()
+            models.Crop.name.ilike(crop_name.strip())
         ).first()
 
     if not crop:
