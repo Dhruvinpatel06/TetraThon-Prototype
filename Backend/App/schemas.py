@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Literal
 
 
 class LocationOut(BaseModel):
@@ -39,4 +40,37 @@ class AdvisoryItem(BaseModel):
 
 class AdvisoryOutput(BaseModel):
     advisories: list[AdvisoryItem]
-    session_id: int  # from FarmerSession DB record
+    session_id: int  # from FarmerSession DB record
+
+
+class PostHarvestInput(BaseModel):
+    crop_name: str
+    quantity_quintals: float = Field(..., gt=0.0)
+    storage_condition: Literal["open", "warehouse", "cold_storage"]
+    location_name: str
+
+
+class OptionDetail(BaseModel):
+    market: str
+    price_per_quintal: float
+    transport_cost: float
+    net_return: float
+    distance_km: float | None = None
+
+
+class StoreOption(OptionDetail):
+    store_days: int
+    storage: str
+    spoilage_loss: float
+    storage_cost: float
+    future_price_per_quintal: float
+
+
+class PostHarvestOutput(BaseModel):
+    recommendation: Literal["sell_now", "store", "transport"]
+    option_label: str
+    expected_return: float
+    expected_return_per_quintal: float
+    details: dict
+    reason: str
+    session_id: int

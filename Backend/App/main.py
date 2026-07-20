@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 from .database import Base, engine, get_db
 from .seed import seed
-from .routers import advisory, rules, health, locations, crops
+from .routers import advisory, rules, health, locations, crops, post_harvest
 
 app = FastAPI(title="ArgiTech API")
 
@@ -14,6 +14,7 @@ app.include_router(rules.router)
 app.include_router(health.router)
 app.include_router(locations.router)
 app.include_router(crops.router)
+app.include_router(post_harvest.router)
 
 
 app.add_middleware(

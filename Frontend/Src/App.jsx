@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { api } from './api'
 import AdvisoryForm from './components/AdvisoryForm'
 import AdvisoryResult from './components/AdvisoryResult'
+import PostHarvestForm from './components/PostHarvestForm'
+import PostHarvestResult from './components/PostHarvestResult'
 import Layout from './components/Layout'
 import HealthCheck from './components/HealthCheck'
 import LocationList from './components/LocationList'
@@ -13,10 +15,14 @@ export default function App() {
   const [crops, setCrops] = useState([])
   const [error, setError] = useState(null)
   
-  // Navigation view state: 'home' | 'form' | 'results'
+  // Navigation view state: 'home' | 'form' | 'results' | 'ph-form' | 'ph-results'
   const [view, setView] = useState('home')
   const [lastResult, setLastResult] = useState(null)
   const [inputs, setInputs] = useState(null)
+
+  // Post-Harvest States
+  const [lastPHResult, setLastPHResult] = useState(null)
+  const [phInputs, setPHInputs] = useState(null)
 
   useEffect(() => {
     Promise.all([api.health(), api.locations(), api.crops()])
@@ -39,18 +45,39 @@ export default function App() {
       {/* Conditional View Rendering */}
       {view === 'home' && (
         <div className="flex flex-col items-center w-full max-w-2xl">
-          {/* Main Action Button */}
-          <div className="w-full bg-gradient-to-r from-emerald-600 to-teal-700 rounded-2xl shadow-lg p-6 text-white text-center mb-8 transform transition duration-300 hover:scale-[1.01]">
-            <h2 className="text-xl font-bold">Need agronomy recommendations?</h2>
-            <p className="text-emerald-100 text-sm mt-1 mb-4">
-              Get stage-specific water, fertilizer, and pest advisories based on your local weather conditions.
-            </p>
-            <button
-              onClick={() => setView('form')}
-              className="inline-flex items-center justify-center bg-white text-emerald-800 font-bold px-6 py-3 rounded-xl shadow hover:bg-emerald-50 transition duration-200 gap-2"
-            >
-              <span>🌾</span> Get Crop Advisory
-            </button>
+          {/* Main Action Buttons Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full mb-8">
+            {/* Advisory Card */}
+            <div className="bg-gradient-to-br from-emerald-600 to-teal-700 rounded-2xl shadow-lg p-5 text-white flex flex-col justify-between transform transition duration-300 hover:scale-[1.01]">
+              <div>
+                <h3 className="text-lg font-bold">Crop Advisory</h3>
+                <p className="text-emerald-100 text-xs mt-1 mb-4 leading-relaxed">
+                  Get stage-specific water, fertilizer, and pest advisories based on local conditions.
+                </p>
+              </div>
+              <button
+                onClick={() => setView('form')}
+                className="w-full inline-flex items-center justify-center bg-white text-emerald-800 font-bold py-2.5 px-4 rounded-xl shadow hover:bg-emerald-50 transition duration-200 gap-2 text-sm"
+              >
+                <span>🌾</span> Get Crop Advisory
+              </button>
+            </div>
+
+            {/* Post-Harvest Card */}
+            <div className="bg-gradient-to-br from-teal-700 to-cyan-800 rounded-2xl shadow-lg p-5 text-white flex flex-col justify-between transform transition duration-300 hover:scale-[1.01]">
+              <div>
+                <h3 className="text-lg font-bold">Post-Harvest Planner</h3>
+                <p className="text-teal-100 text-xs mt-1 mb-4 leading-relaxed">
+                  Optimize storage, transport, and selling timing to maximize net profits.
+                </p>
+              </div>
+              <button
+                onClick={() => setView('ph-form')}
+                className="w-full inline-flex items-center justify-center bg-white text-teal-800 font-bold py-2.5 px-4 rounded-xl shadow hover:bg-teal-50 transition duration-200 gap-2 text-sm"
+              >
+                <span>📦</span> Plan Post-Harvest
+              </button>
+            </div>
           </div>
 
           {/* Health check card */}
@@ -85,6 +112,28 @@ export default function App() {
           onGoHome={() => setView('home')}
         />
       )}
+
+      {view === 'ph-form' && (
+        <PostHarvestForm
+          locations={locations}
+          crops={crops}
+          onSubmitSuccess={(res, inp) => {
+            setLastPHResult(res)
+            setPHInputs(inp)
+            setView('ph-results')
+          }}
+          onCancel={() => setView('home')}
+        />
+      )}
+
+      {view === 'ph-results' && (
+        <PostHarvestResult
+          result={lastPHResult}
+          inputs={phInputs}
+          onNewPlan={() => setView('ph-form')}
+          onGoHome={() => setView('home')}
+        />
+      )}
     </Layout>
   )
-}
+}
