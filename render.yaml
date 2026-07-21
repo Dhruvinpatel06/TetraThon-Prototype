@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: argitech-backend
+    name: agritech-backend
     env: python
     buildCommand: pip install -r Backend/requirements.txt
     startCommand: uvicorn App.main:app --host 0.0.0.0 --port $PORT

@@ -7,7 +7,7 @@ from .database import Base, engine, get_db
 from .seed import seed
 from .routers import advisory, rules, health, locations, crops, post_harvest
 
-app = FastAPI(title="ArgiTech API")
+app = FastAPI(title="AgriTech API")
 
 app.include_router(advisory.router)
 app.include_router(rules.router)

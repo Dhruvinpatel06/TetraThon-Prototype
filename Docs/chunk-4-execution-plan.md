@@ -411,7 +411,7 @@ const [view, setView] = useState('home')
 ### 6.2 Top Navigation Header Enhancement
 
 Update `Layout.jsx` header to feature a modern top navigation bar:
-- **Logo / Title:** Krishi Drishti (Precision AgriTech Platform)
+- **Logo / Title:** AgriTech (Precision AgriTech Platform)
 - **Nav Links:**
   - 🏠 Home
   - 🌾 Crop Advisory (Module A)
@@ -487,7 +487,7 @@ Create the content for the 7-slide pre-screening submission pitch deck and recor
 
 | Slide # | Topic | Key Content & Bullet Points | Visual Element |
 |---------|-------|-----------------------------|----------------|
-| **Slide 1** | **Title & Team** | Project: **Krishi Drishti** — Precision Advisory & Post-Harvest Loss Reduction Platform. Subtitle: TetraTHON 2026 Phase 0 Prototype. Team members & roles. | Logo & Tagline Banner |
+| **Slide 1** | **Title & Team** | Project: **AgriTech** — Precision Advisory & Post-Harvest Loss Reduction Platform. Subtitle: TetraTHON 2026 Phase 0 Prototype. Team members & roles. | Logo & Tagline Banner |
 | **Slide 2** | **Problem Understanding** | High post-harvest losses (15-25% crop spoilage in open transit/storage). Suboptimal irrigation/fertilizer timing leading to 20-30% yield penalty. Lack of localized market price transparency. | Problem Stat Callout Graphic |
 | **Slide 3** | **Proposed Approach** | Dual-module decision support system: Module A (Stage & Weather-aware Advisory Engine) + Module B (Spoilage Decay & Haversine Transport Financial Optimization). | Product Architecture Diagram |
 | **Slide 4** | **Technical Architecture** | Clean decoupled architecture: FastAPI Python backend, React Vite frontend, SQLite persistent session storage, Recharts interactive data visualization, rule-based inference engine. | Technical Stack Flowchart |
