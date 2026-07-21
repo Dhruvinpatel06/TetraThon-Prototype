@@ -150,23 +150,33 @@ The deterioration of agricultural produce between harvest and the point of sale.
 
 ---
 
-## Slide 7: Technical Approach
+## Slide 7: Technical Approach (02 — Proposed Approach continued)
 
 ### **Lightweight, Fast, and Scalable**
 
-**Built for Speed and Reliability:**
-* Rule-based engine — fast to build, easy to explain, no training data needed
-* Mocked data with seamless live API upgrade path (no UI changes required)
-* SQLite database for quick prototyping, PostgreSQL for production
+**Tech Stack:**
+
+| Layer | Technology | Why This Choice |
+|-------|------------|-----------------|
+| **Frontend** | React 18, Vite 5, Tailwind CSS 3.4 | Fast to scaffold, responsive by default, works on any device |
+| **Backend** | FastAPI (Python 3.11+), Uvicorn | Pairs naturally with ML/rule-engine code, auto-generates API docs |
+| **Data Layer** | SQLite (SQLAlchemy ORM), CSV datasets | No external DB setup overhead, quick prototyping |
+| **Visualizations** | Recharts 2.12 | Interactive SVG charts for spoilage curves and price trends |
+| **Deployment** | Vercel (frontend), Render/Railway (backend) | Free tier, instant deploy, shareable links |
+
+**Design Principles:**
+
+| Principle | Implementation |
+|-----------|----------------|
+| **Rule-based engine** | Fast to build, easy to explain, no training data needed |
+| **Mocked → Live upgrade** | Swap mock data for real APIs with no UI changes required |
+| **Graceful degradation** | If live API fails, system automatically uses cached/mocked data |
+| **No error screens** | Farmer always gets a recommendation, never sees a crash |
 
 **Coverage:**
 * 4 crop types: Cotton, Wheat, Groundnut, Tomato
 * 5 Gujarat APMC markets: Ahmedabad, Surat, Vadodara, Rajkot, Anand
 * 20 crop-location combinations tested end-to-end
-
-**Graceful Degradation:**
-* If live API fails, system automatically uses cached/mocked data
-* No error screens — farmer always gets a recommendation
 
 ---
 
