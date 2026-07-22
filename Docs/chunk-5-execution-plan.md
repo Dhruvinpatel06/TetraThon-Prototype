@@ -841,10 +841,10 @@ To sign off on Chunk 5, all criteria must be checked and verified:
 
 ## 12. Handoff to P2 Template
 
-Create `Docs/handoff-to-p2-phase1.md` to guide Person 2 (Saumya) when starting Chunk 6 (Leaf-Disease Photo Classifier):
+Create `Docs/handoff-to-p2-phase1.md` to guide Person 2 (Om B Patel) when starting Chunk 6 (Leaf-Disease Photo Classifier):
 
 ```markdown
-# Handoff to Person 2 (Saumya) — Chunk 5 Completion & Chunk 6 Kickoff
+# Handoff to Person 2 (Om B Patel) — Chunk 5 Completion & Chunk 6 Kickoff
 
 Chunk 5 (Real Data Integrations) is 100% complete!
 
