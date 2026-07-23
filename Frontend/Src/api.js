@@ -26,4 +26,17 @@ export const api = {
   postAdvisory: (data) => post('/api/advisory', data),
   getRules: (cropName) => get(`/api/rules?crop_name=${encodeURIComponent(cropName)}`),
   postPostHarvest: (data) => post('/api/post-harvest', data),
-}
+  postLeafClassify: async (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await fetch(`${API_BASE}/api/leaf-classify`, {
+      method: 'POST',
+      body: formData,
+    })
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}))
+      throw new Error(errorData.detail || `/api/leaf-classify failed: ${res.status}`)
+    }
+    return res.json()
+  },
+}

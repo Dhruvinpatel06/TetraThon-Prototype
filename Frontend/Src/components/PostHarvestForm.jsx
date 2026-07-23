@@ -42,7 +42,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
     <div className="w-full max-w-lg bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden transform transition duration-300 hover:shadow-2xl">
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-5 text-white">
-        <h2 className="text-xl font-bold tracking-tight">📦 Plan Post-Harvest</h2>
+        <h2 className="text-xl font-bold tracking-tight">Plan Post-Harvest</h2>
         <p className="text-emerald-100 text-xs mt-1">
           Optimize your crop storage, transport, or selling decision based on market trends, transport costs, and spoilage estimates.
         </p>
@@ -59,7 +59,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
         {/* Crop Dropdown */}
         <div className="flex flex-col">
           <label htmlFor="crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-            🌾 Select Crop <span className="text-red-500">*</span>
+            Select Crop <span className="text-red-500">*</span>
           </label>
           <select
             id="crop"
@@ -80,7 +80,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
         {/* Quantity (Quintals) Input */}
         <div className="flex flex-col">
           <label htmlFor="quantity" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-            ⚖️ Quantity (Quintals) <span className="text-red-500">*</span>
+            Quantity (Quintals) <span className="text-red-500">*</span>
           </label>
           <input
             type="number"
@@ -99,7 +99,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
         {/* Storage Condition Dropdown */}
         <div className="flex flex-col">
           <label htmlFor="storage-condition" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-            🏢 Storage Condition <span className="text-red-500">*</span>
+            Storage Condition <span className="text-red-500">*</span>
           </label>
           <select
             id="storage-condition"
@@ -118,7 +118,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
         {/* Location Dropdown */}
         <div className="flex flex-col">
           <label htmlFor="location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-            📍 Select Location <span className="text-red-500">*</span>
+            Select Location <span className="text-red-500">*</span>
           </label>
           <select
             id="location"

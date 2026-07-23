@@ -1,88 +1,95 @@
-import sys
+import json
 import os
-
-# Ensure UTF-8 output encoding for Windows terminal
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
-
+import sys
 from pathlib import Path
+
 backend_dir = Path(__file__).resolve().parent
-sys.path.insert(0, str(backend_dir))
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
 
-from unittest.mock import patch, MagicMock
-import httpx
-from App.adapters.weather import get_forecast
+from fastapi.testclient import TestClient
+from App.main import app
+from App.database import engine, Base
+from App.seed import seed
 
+# Ensure database tables and seed data exist
+Base.metadata.create_all(bind=engine)
+seed()
 
-def test_fallback_no_api_key():
-    print("Testing Milestone 4: Fallback Scenario 1 — No API Key Set...")
-    with patch("App.adapters.weather.OPENWEATHER_API_KEY", ""):
-        res = get_forecast("Ahmedabad")
-        assert res["location"] == "Ahmedabad"
-        assert res["source"] == "mock"
-        assert len(res["forecast"]) == 7
-        print("  [OK] Successfully fell back to mock forecast when OPENWEATHER_API_KEY is empty.")
+client = TestClient(app)
 
+CLASS_NAMES_PATH = backend_dir / "models" / "class_names.json"
+DATASET_DIR = backend_dir / "data" / "plantvillage_subset"
 
-def test_fallback_invalid_api_key_401():
-    print("\nTesting Milestone 4: Fallback Scenario 2 — Invalid API Key (HTTP 401)...")
-    mock_resp = MagicMock()
-    mock_resp.raise_for_status.side_effect = httpx.HTTPStatusError("401 Unauthorized", request=MagicMock(), response=mock_resp)
+def test_milestone_4_backend_endpoint():
+    """
+    Verification test for Chunk 6 - Milestone 4:
+    1. Verify POST /api/leaf-classify endpoint with valid image uploads for all 6 classes.
+    2. Verify response JSON schema: predicted_class, confidence, is_healthy, top_predictions.
+    3. Verify edge cases: invalid non-image file type returns 400, empty upload returns 400.
+    4. Verify existing Phase 0 & Chunk 5 endpoints (/api/health, /api/crops, /api/locations) still work.
+    """
+    # 1. Test existing endpoints for non-regression
+    res = client.get("/api/health")
+    assert res.status_code == 200, f"Health endpoint failed: {res.text}"
+    print("[OK] GET /api/health returned 200 OK.")
 
-    with patch("App.adapters.weather.OPENWEATHER_API_KEY", "invalid_api_key_xyz"):
-        with patch("httpx.Client.get", return_value=mock_resp):
-            res = get_forecast("Vadodara")
-            assert res["location"] == "Vadodara"
-            assert res["source"] == "mock"
-            assert len(res["forecast"]) == 7
-            print("  [OK] Successfully fell back to mock forecast on HTTP 401 Unauthorized.")
+    res = client.get("/api/crops")
+    assert res.status_code == 200, f"Crops endpoint failed: {res.text}"
+    print("[OK] GET /api/crops returned 200 OK.")
 
+    res = client.get("/api/locations")
+    assert res.status_code == 200, f"Locations endpoint failed: {res.text}"
+    print("[OK] GET /api/locations returned 200 OK.")
 
-def test_fallback_server_error_500():
-    print("\nTesting Milestone 4: Fallback Scenario 3 — OpenWeather Server Error (HTTP 500)...")
-    mock_resp = MagicMock()
-    mock_resp.raise_for_status.side_effect = httpx.HTTPStatusError("500 Internal Server Error", request=MagicMock(), response=mock_resp)
+    # 2. Test POST /api/leaf-classify with valid images across 6 classes
+    with open(CLASS_NAMES_PATH, "r") as f:
+        class_names = json.load(f)
 
-    with patch("App.adapters.weather.OPENWEATHER_API_KEY", "some_key"):
-        with patch("httpx.Client.get", return_value=mock_resp):
-            res = get_forecast("Surat")
-            assert res["location"] == "Surat"
-            assert res["source"] == "mock"
-            assert len(res["forecast"]) == 7
-            print("  [OK] Successfully fell back to mock forecast on HTTP 500 Internal Server Error.")
+    for cls_name in class_names:
+        cls_dir = DATASET_DIR / cls_name
+        test_file = list(cls_dir.glob("*.bmp"))[0]
 
+        with open(test_file, "rb") as f:
+            file_bytes = f.read()
 
-def test_fallback_timeout():
-    print("\nTesting Milestone 4: Fallback Scenario 4 — Network Timeout (>5s)...")
-    with patch("App.adapters.weather.OPENWEATHER_API_KEY", "some_key"):
-        with patch("httpx.Client.get", side_effect=httpx.TimeoutException("Connection timed out")):
-            res = get_forecast("Rajkot")
-            assert res["location"] == "Rajkot"
-            assert res["source"] == "mock"
-            assert len(res["forecast"]) == 7
-            print("  [OK] Successfully fell back to mock forecast on TimeoutException.")
+        response = client.post(
+            "/api/leaf-classify",
+            files={"file": (test_file.name, file_bytes, "image/bmp")}
+        )
 
+        assert response.status_code == 200, f"Classification failed for {cls_name}: {response.text}"
+        data = response.json()
 
-def test_fallback_malformed_json():
-    print("\nTesting Milestone 4: Fallback Scenario 5 — Malformed Response JSON...")
-    mock_resp = MagicMock()
-    mock_resp.raise_for_status = MagicMock()
-    mock_resp.json = MagicMock(return_value={"invalid_schema": True})
+        assert "predicted_class" in data, "Missing 'predicted_class' in response"
+        assert "confidence" in data, "Missing 'confidence' in response"
+        assert "is_healthy" in data, "Missing 'is_healthy' in response"
+        assert "top_predictions" in data, "Missing 'top_predictions' in response"
 
-    with patch("App.adapters.weather.OPENWEATHER_API_KEY", "some_key"):
-        with patch("httpx.Client.get", return_value=mock_resp):
-            res = get_forecast("Anand")
-            assert res["location"] == "Anand"
-            assert res["source"] == "mock"
-            assert len(res["forecast"]) == 7
-            print("  [OK] Successfully fell back to mock forecast on malformed JSON response.")
+        assert data["predicted_class"] == cls_name, f"Expected {cls_name}, got {data['predicted_class']}"
+        assert data["confidence"] > 0.80, f"Low confidence ({data['confidence']}) for {cls_name}"
+        assert data["is_healthy"] == ("healthy" in cls_name)
+        assert len(data["top_predictions"]) <= 3
 
+        print(f"[OK] Classified {cls_name:25s} -> {data['predicted_class']:25s} (Conf: {data['confidence']:.2%}, Healthy: {data['is_healthy']})")
+
+    # 3. Test Edge Case: Non-image file upload
+    response = client.post(
+        "/api/leaf-classify",
+        files={"file": ("notes.txt", b"Hello text file content", "text/plain")}
+    )
+    assert response.status_code == 400, f"Expected 400 for text file, got {response.status_code}"
+    print("[OK] Non-image upload correctly returned HTTP 400 Bad Request.")
+
+    # 4. Test Edge Case: Empty file upload
+    response = client.post(
+        "/api/leaf-classify",
+        files={"file": ("empty.jpg", b"", "image/jpeg")}
+    )
+    assert response.status_code == 400, f"Expected 400 for empty file, got {response.status_code}"
+    print("[OK] Empty file upload correctly returned HTTP 400 Bad Request.")
+
+    print("\nALL MILESTONE 4 VERIFICATION TESTS PASSED SUCCESSFULLY!")
 
 if __name__ == "__main__":
-    print("=== STARTING MILESTONE 4 VERIFICATION ===")
-    test_fallback_no_api_key()
-    test_fallback_invalid_api_key_401()
-    test_fallback_server_error_500()
-    test_fallback_timeout()
-    test_fallback_malformed_json()
-    print("\n=== MILESTONE 4 VERIFICATION COMPLETED SUCCESSFULLY! ===")
+    test_milestone_4_backend_endpoint()

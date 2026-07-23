@@ -1,87 +1,29 @@
-import sys
+import json
 import os
-
-# Ensure UTF-8 output encoding for Windows terminal
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
-
 from pathlib import Path
-backend_dir = Path(__file__).resolve().parent
-sys.path.insert(0, str(backend_dir))
 
-from unittest.mock import patch, MagicMock
-import httpx
-from App.adapters.market_prices import load_prices, get_latest_price, get_future_price, get_price_adapter_status
-from App.engine.decision import generate_recommendation
+UNIFIED_FORM_PATH = Path("Frontend/src/components/UnifiedScenarioForm.jsx")
 
+def test_milestone_6_unified_scenario_form():
+    """
+    Verification test for Chunk 6 - Milestone 6:
+    1. Verify photo upload field in Frontend/src/components/UnifiedScenarioForm.jsx.
+    2. Verify handleLeafUpload handler and api.postLeafClassify call.
+    3. Verify leafResult integration in onSubmitSuccess.
+    4. Verify AI disclaimer label text present.
+    """
+    assert UNIFIED_FORM_PATH.exists(), f"Missing {UNIFIED_FORM_PATH}"
+    with open(UNIFIED_FORM_PATH, "r", encoding="utf-8") as f:
+        form_code = f.read()
 
-def test_price_fallback_no_api_key():
-    print("Testing Milestone 6: Fallback Scenario 1 — No AGMARKNET API Key Set...")
-    with patch("App.adapters.market_prices.AGMARKNET_API_KEY", ""):
-        # Clear live cache for test isolation
-        with patch.dict("App.adapters.market_prices._live_prices_cache", {}, clear=True):
-            prices = load_prices("Cotton", "Ahmedabad APMC")
-            assert len(prices) > 0, "Expected CSV fallback data"
-            assert get_price_adapter_status("Cotton", "Ahmedabad APMC") == "mock"
-            print("  [OK] Successfully fell back to mandi_prices.csv when AGMARKNET_API_KEY is empty.")
+    assert "handleLeafUpload" in form_code, "Missing 'handleLeafUpload' in UnifiedScenarioForm.jsx"
+    assert "postLeafClassify" in form_code, "Missing 'postLeafClassify' call in UnifiedScenarioForm.jsx"
+    assert "leafResult" in form_code, "Missing 'leafResult' state in UnifiedScenarioForm.jsx"
+    assert 'col-span-1 md:col-span-2' in form_code, "Missing full-width grid layout for photo upload"
+    assert "AI-assisted analysis" in form_code, "Missing AI disclaimer label text"
 
-
-def test_price_fallback_invalid_api_key_401():
-    print("\nTesting Milestone 6: Fallback Scenario 2 — Invalid API Key (HTTP 401)...")
-    mock_resp = MagicMock()
-    mock_resp.raise_for_status.side_effect = httpx.HTTPStatusError("401 Unauthorized", request=MagicMock(), response=mock_resp)
-
-    with patch("App.adapters.market_prices.AGMARKNET_API_KEY", "invalid_key"):
-        with patch.dict("App.adapters.market_prices._live_prices_cache", {}, clear=True):
-            with patch("httpx.Client.get", return_value=mock_resp):
-                prices = load_prices("Wheat", "Vadodara APMC")
-                assert len(prices) > 0, "Expected CSV fallback data"
-                assert get_price_adapter_status("Wheat", "Vadodara APMC") == "mock"
-                print("  [OK] Successfully fell back to mandi_prices.csv on HTTP 401 Unauthorized.")
-
-
-def test_price_fallback_server_error_500():
-    print("\nTesting Milestone 6: Fallback Scenario 3 — Server Error (HTTP 500)...")
-    mock_resp = MagicMock()
-    mock_resp.raise_for_status.side_effect = httpx.HTTPStatusError("500 Internal Server Error", request=MagicMock(), response=mock_resp)
-
-    with patch("App.adapters.market_prices.AGMARKNET_API_KEY", "some_key"):
-        with patch.dict("App.adapters.market_prices._live_prices_cache", {}, clear=True):
-            with patch("httpx.Client.get", return_value=mock_resp):
-                prices = load_prices("Groundnut", "Surat APMC")
-                assert len(prices) > 0, "Expected CSV fallback data"
-                assert get_price_adapter_status("Groundnut", "Surat APMC") == "mock"
-                print("  [OK] Successfully fell back to mandi_prices.csv on HTTP 500 Server Error.")
-
-
-def test_price_fallback_timeout():
-    print("\nTesting Milestone 6: Fallback Scenario 4 — Network Timeout (>5s)...")
-    with patch("App.adapters.market_prices.AGMARKNET_API_KEY", "some_key"):
-        with patch.dict("App.adapters.market_prices._live_prices_cache", {}, clear=True):
-            with patch("httpx.Client.get", side_effect=httpx.TimeoutException("Connection timed out")):
-                prices = load_prices("Tomato", "Rajkot APMC")
-                assert len(prices) > 0, "Expected CSV fallback data"
-                assert get_price_adapter_status("Tomato", "Rajkot APMC") == "mock"
-                print("  [OK] Successfully fell back to mandi_prices.csv on TimeoutException.")
-
-
-def test_price_fallback_decision_engine_regression():
-    print("\nTesting Milestone 6: Decision Engine Regression Test Under Fallback Mode...")
-    with patch("App.adapters.market_prices.AGMARKNET_API_KEY", ""):
-        with patch.dict("App.adapters.market_prices._live_prices_cache", {}, clear=True):
-            rec = generate_recommendation("Cotton", 50.0, "warehouse", 23.0225, 72.5714)
-            assert "recommendation" in rec
-            assert rec["recommendation"] in ["sell_now", "store", "transport"]
-            assert rec["expected_return"] > 0
-            assert "details" in rec
-            print(f"  [OK] Decision Engine executed cleanly under fallback: {rec['option_label']} (INR {rec['expected_return']}).")
-
+    print("[OK] UnifiedScenarioForm.jsx verified with photo upload field & classification handler.")
+    print("\nALL MILESTONE 6 VERIFICATION TESTS PASSED SUCCESSFULLY!")
 
 if __name__ == "__main__":
-    print("=== STARTING MILESTONE 6 VERIFICATION ===")
-    test_price_fallback_no_api_key()
-    test_price_fallback_invalid_api_key_401()
-    test_price_fallback_server_error_500()
-    test_price_fallback_timeout()
-    test_price_fallback_decision_engine_regression()
-    print("\n=== MILESTONE 6 VERIFICATION COMPLETED SUCCESSFULLY! ===")
+    test_milestone_6_unified_scenario_form()

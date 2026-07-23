@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import LeafResult from './LeafResult'
 
 export default function AdvisoryResult({ result, inputs, onNewAdvisory, onGoHome }) {
   const [expandedCard, setExpandedCard] = useState(null) // 'irrigation', 'fertiliser', 'pest', or null
@@ -7,7 +8,7 @@ export default function AdvisoryResult({ result, inputs, onNewAdvisory, onGoHome
     setExpandedCard(expandedCard === type ? null : type)
   }
 
-  const { locationName, cropName, sowingDate, weatherObservation } = inputs
+  const { locationName, cropName, sowingDate, weatherObservation, leafResult } = inputs
   const { advisories, session_id } = result
 
   // Weather observation display names
@@ -66,7 +67,7 @@ export default function AdvisoryResult({ result, inputs, onNewAdvisory, onGoHome
         </span>
         <h2 className="text-2xl font-extrabold mt-3">Advisories for {cropName}</h2>
         <p className="text-emerald-100 text-sm mt-1">
-          📍 {locationName} • Sown on {new Date(sowingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+          {locationName} • Sown on {new Date(sowingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
         {weatherObservation && (
           <p className="inline-block bg-teal-800 bg-opacity-40 text-teal-100 text-xs px-2.5 py-0.5 rounded-md mt-2 border border-teal-500 border-opacity-25">
@@ -77,6 +78,9 @@ export default function AdvisoryResult({ result, inputs, onNewAdvisory, onGoHome
 
       {/* Advisories List */}
       <div className="p-6 space-y-4">
+        {/* Leaf Result Card (if uploaded) */}
+        {leafResult && <LeafResult result={leafResult} />}
+
         {advisories.map((advisory) => {
           const isExpanded = expandedCard === advisory.type
           const details = advisory.details
@@ -225,7 +229,9 @@ export default function AdvisoryResult({ result, inputs, onNewAdvisory, onGoHome
 
                   {details.is_generic_fallback && (
                     <div className="bg-amber-50 text-amber-800 p-2 rounded-lg border border-amber-200 text-[10px] flex items-center gap-1.5 mt-2">
-                      <span>⚠️</span>
+                      <svg className="w-3.5 h-3.5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
                       <span><strong>Notice:</strong> Sowing date exceeds typical duration. Showing generic end-of-stage rules.</span>
                     </div>
                   )}
