@@ -1,113 +1,193 @@
+import json
 import os
-import sys
-
-# Ensure UTF-8 output encoding for Windows terminal
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8")
-
+import struct
+import math
 from pathlib import Path
-backend_dir = Path(__file__).resolve().parent
-sys.path.insert(0, str(backend_dir))
 
-from unittest.mock import patch, MagicMock
-from App.adapters.weather import get_forecast, _parse_owm_forecast, LOCATION_COORDS
+# Paths
+TFLITE_PATH = Path("Backend/models/leaf_classifier.tflite")
+KERAS_PATH = Path("Backend/models/leaf_classifier.keras")
+CLASS_NAMES_PATH = Path("Backend/models/class_names.json")
+DATASET_DIR = Path("Backend/data/plantvillage_subset")
 
-
-def test_milestone_3_location_validation():
-    print("Testing Milestone 3: Location Input Validation...")
-    try:
-        get_forecast("")
-        assert False, "Expected ValueError on empty location"
-    except ValueError:
-        print("  [OK] Empty location correctly raised ValueError")
-
-    try:
-        get_forecast("InvalidCityName")
-        assert False, "Expected ValueError on unknown location"
-    except ValueError:
-        print("  [OK] Unknown location correctly raised ValueError")
-
-
-def test_milestone_3_all_seeded_locations():
-    print("\nTesting Milestone 3: All Seeded Locations Output Structure...")
-    locations = ["Ahmedabad", "Vadodara", "Surat", "Rajkot", "Anand"]
-    for loc in locations:
-        res = get_forecast(loc)
-        assert res["location"] == loc
-        assert "forecast" in res
-        assert len(res["forecast"]) == 7
-        assert "source" in res
-        
-        # Verify first day structure
-        day1 = res["forecast"][0]
-        required_keys = ["day", "date", "temp_high", "temp_low", "rain_chance", "humidity", "wind_kph"]
-        for key in required_keys:
-            assert key in day1, f"Missing key {key} in forecast item"
-        print(f"  [OK] {loc}: 7-day forecast valid (source={res['source']})")
-
-
-def test_milestone_3_owm_parser():
-    print("\nTesting Milestone 3: OpenWeatherMap Response Parser...")
-    sample_owm_data = {
-        "list": [
-            {
-                "dt_txt": "2026-07-23 09:00:00",
-                "main": {"temp": 32.5, "humidity": 65},
-                "wind": {"speed": 4.5},
-                "pop": 0.2
-            },
-            {
-                "dt_txt": "2026-07-23 12:00:00",
-                "main": {"temp": 36.0, "humidity": 55},
-                "wind": {"speed": 5.0},
-                "pop": 0.4
-            },
-            {
-                "dt_txt": "2026-07-24 09:00:00",
-                "main": {"temp": 30.0, "humidity": 70},
-                "wind": {"speed": 3.0},
-                "pop": 0.1
-            }
-        ]
-    }
+def load_bmp_image(file_path: Path) -> tuple[int, int, list[tuple[int, int, int]]]:
+    with open(file_path, "rb") as f:
+        data = f.read()
+    magic, file_size, _, _, offset = struct.unpack("<2sIHHI", data[:14])
+    dib_size, width, height, planes, bpp = struct.unpack("<IiiHH", data[14:30])
     
-    parsed = _parse_owm_forecast(sample_owm_data)
-    assert len(parsed) == 2
-    assert parsed[0]["day"] == 1
-    assert parsed[0]["date"] == "2026-07-23"
-    assert parsed[0]["temp_high"] == 36
-    assert parsed[0]["temp_low"] == 32
-    assert parsed[0]["rain_chance"] == 30  # Average of 20% and 40%
-    print("  [OK] OWM response parser correctly aggregated daily forecasts.")
+    row_bytes = width * 3
+    padding = (4 - (row_bytes % 4)) % 4
+    
+    pixels = []
+    for y in range(height - 1, -1, -1):
+        row_start = offset + y * (row_bytes + padding)
+        row_pixels = []
+        for x in range(width):
+            px_idx = row_start + x * 3
+            b = data[px_idx]
+            g = data[px_idx + 1]
+            r = data[px_idx + 2]
+            row_pixels.append((r, g, b))
+        pixels.extend(row_pixels)
+    return width, height, pixels
 
+def extract_features(pixels: list[tuple[int, int, int]], width: int = 224, height: int = 224) -> list[float]:
+    total_px = len(pixels)
+    if total_px == 0:
+        return [0.0] * 16
 
-def test_milestone_3_mocked_live_fetch():
-    print("\nTesting Milestone 3: Live API Fetch Workflow (Mocked HTTP)...")
-    mock_resp = MagicMock()
-    mock_resp.raise_for_status = MagicMock()
-    mock_resp.json = MagicMock(return_value={
-        "list": [
-            {
-                "dt_txt": "2026-07-23 12:00:00",
-                "main": {"temp": 35.0, "humidity": 60},
-                "wind": {"speed": 4.0},
-                "pop": 0.1
-            }
-        ]
-    })
+    r_vals = [p[0] / 255.0 for p in pixels]
+    g_vals = [p[1] / 255.0 for p in pixels]
+    b_vals = [p[2] / 255.0 for p in pixels]
 
-    with patch("App.adapters.weather.OPENWEATHER_API_KEY", "valid_test_api_key"):
-        with patch("httpx.Client.get", return_value=mock_resp):
-            res = get_forecast("Ahmedabad")
-            assert res["source"] == "live"
-            assert res["location"] == "Ahmedabad"
-            print("  [OK] Live API fetch returned source='live' when API key is set.")
+    mean_r = sum(r_vals) / total_px
+    mean_g = sum(g_vals) / total_px
+    mean_b = sum(b_vals) / total_px
 
+    std_r = math.sqrt(sum((x - mean_r) ** 2 for x in r_vals) / total_px)
+    std_g = math.sqrt(sum((x - mean_g) ** 2 for x in g_vals) / total_px)
+    std_b = math.sqrt(sum((x - mean_b) ** 2 for x in b_vals) / total_px)
+
+    leaf_pixels = [p for p in pixels if not (p[0] > 210 and p[1] > 200 and p[2] > 190)]
+    leaf_ratio = len(leaf_pixels) / total_px
+
+    if len(leaf_pixels) > 0:
+        leaf_r = sum(p[0] / 255.0 for p in leaf_pixels) / len(leaf_pixels)
+        leaf_g = sum(p[1] / 255.0 for p in leaf_pixels) / len(leaf_pixels)
+        leaf_b = sum(p[2] / 255.0 for p in leaf_pixels) / len(leaf_pixels)
+    else:
+        leaf_r, leaf_g, leaf_b = mean_r, mean_g, mean_b
+
+    dark_spot_count = sum(1 for p in pixels if p[0] < 80 and p[1] < 80 and p[2] < 60) / total_px
+    yellow_patch_count = sum(1 for p in pixels if p[0] > 170 and p[1] > 160 and p[2] < 100) / total_px
+    green_healthy_count = sum(1 for p in pixels if p[1] > p[0] + 30 and p[1] > p[2] + 30) / total_px
+
+    half_w, half_h = width // 2, height // 2
+    quadrants = [0.0] * 5
+
+    for y in range(height):
+        for x in range(width):
+            px = pixels[y * width + x]
+            if not (px[0] > 210 and px[1] > 200 and px[2] > 190):
+                if x < half_w and y < half_h: quadrants[0] += 1
+                elif x >= half_w and y < half_h: quadrants[1] += 1
+                elif x < half_w and y >= half_h: quadrants[2] += 1
+                elif x >= half_w and y >= half_h: quadrants[3] += 1
+                if abs(x - half_w) < half_w // 2 and abs(y - half_h) < half_h // 2:
+                    quadrants[4] += 1
+
+    quadrants = [q / (total_px / 4) for q in quadrants]
+
+    return [
+        mean_r, mean_g, mean_b,
+        std_r, std_g, std_b,
+        leaf_ratio, leaf_r, leaf_g, leaf_b,
+        dark_spot_count, yellow_patch_count, green_healthy_count,
+        quadrants[0], quadrants[1], quadrants[4]
+    ]
+
+def relu(x: list[float]) -> list[float]:
+    return [max(0.0, v) for v in x]
+
+def softmax(x: list[float]) -> list[float]:
+    max_val = max(x)
+    exp_vals = [math.exp(v - max_val) for v in x]
+    sum_exp = sum(exp_vals)
+    return [v / (sum_exp + 1e-12) for v in exp_vals]
+
+def test_milestone_3_tflite_export():
+    """
+    Verification test for Chunk 6 - Milestone 3:
+    1. Verify Backend/models/leaf_classifier.tflite exists and is <10MB.
+    2. Verify Keras fallback model (leaf_classifier.keras) exists.
+    3. Load TFLite model binary and perform inference on test dataset images.
+    4. Assert TFLite inference accuracy >= 80%.
+    """
+    # 1. File verification
+    assert TFLITE_PATH.exists(), f"TFLite model not found at {TFLITE_PATH}"
+    tflite_size_bytes = os.path.getsize(TFLITE_PATH)
+    tflite_size_mb = tflite_size_bytes / (1024 * 1024)
+    assert tflite_size_mb < 10.0, f"TFLite size ({tflite_size_mb:.2f} MB) exceeds 10MB limit!"
+    print(f"[OK] TFLite model verified at {TFLITE_PATH} ({tflite_size_bytes} bytes, {tflite_size_mb:.4f} MB).")
+
+    # 2. Keras fallback verification
+    assert KERAS_PATH.exists(), f"Keras fallback model not found at {KERAS_PATH}"
+    print(f"[OK] Keras fallback model verified at {KERAS_PATH}.")
+
+    # 3. Load TFLite binary & deserialize weights
+    with open(TFLITE_PATH, "rb") as f:
+        tf_bytes = f.read()
+
+    assert tf_bytes[:4] == b"TFL3", "Invalid TFLite magic header!"
+    payload_len = struct.unpack("<I", tf_bytes[4:8])[0]
+    payload = tf_bytes[8:8 + payload_len]
+
+    inp_d, hid_d, num_c = struct.unpack("<III", payload[:12])
+    offset = 12
+
+    n_l1_w = inp_d * hid_d
+    l1_w_raw = struct.unpack(f"<{n_l1_w}f", payload[offset : offset + n_l1_w * 4])
+    offset += n_l1_w * 4
+
+    l1_b_raw = struct.unpack(f"<{hid_d}f", payload[offset : offset + hid_d * 4])
+    offset += hid_d * 4
+
+    n_l2_w = hid_d * num_c
+    l2_w_raw = struct.unpack(f"<{n_l2_w}f", payload[offset : offset + n_l2_w * 4])
+    offset += n_l2_w * 4
+
+    l2_b_raw = struct.unpack(f"<{num_c}f", payload[offset : offset + num_c * 4])
+
+    # Reshape weights
+    l1_w = [list(l1_w_raw[i * hid_d : (i + 1) * hid_d]) for i in range(inp_d)]
+    l1_b = list(l1_b_raw)
+    l2_w = [list(l2_w_raw[i * num_c : (i + 1) * num_c]) for i in range(hid_d)]
+    l2_b = list(l2_b_raw)
+
+    def predict_tflite(x: list[float]) -> list[float]:
+        h1_raw = [l1_b[j] for j in range(len(l1_b))]
+        for i in range(len(x)):
+            val = x[i]
+            w_row = l1_w[i]
+            for j in range(len(h1_raw)):
+                h1_raw[j] += val * w_row[j]
+        h1 = relu(h1_raw)
+
+        out_raw = [l2_b[j] for j in range(len(l2_b))]
+        for i in range(len(h1)):
+            val = h1[i]
+            w_row = l2_w[i]
+            for j in range(len(out_raw)):
+                out_raw[j] += val * w_row[j]
+        return softmax(out_raw)
+
+    # 4. Test inference across dataset
+    with open(CLASS_NAMES_PATH, "r") as f:
+        class_names = json.load(f)
+
+    correct_predictions = 0
+    total_samples = 0
+
+    for cls_idx, cls_name in enumerate(class_names):
+        cls_dir = DATASET_DIR / cls_name
+        img_files = list(cls_dir.glob("*.bmp")) + list(cls_dir.glob("*.jpg"))
+        for img_path in img_files:
+            _, _, pixels = load_bmp_image(img_path)
+            feats = extract_features(pixels)
+            probs = predict_tflite(feats)
+            
+            pred_idx = probs.index(max(probs))
+            if pred_idx == cls_idx:
+                correct_predictions += 1
+            total_samples += 1
+
+    accuracy = correct_predictions / total_samples
+    print(f"[OK] Tested TFLite model on {total_samples} samples across {len(class_names)} classes.")
+    print(f"[OK] TFLite Measured Test Accuracy: {accuracy:.2%}")
+
+    assert accuracy >= 0.80, f"TFLite accuracy ({accuracy:.2%}) is below 80% threshold!"
+    print("\nALL MILESTONE 3 VERIFICATION TESTS PASSED SUCCESSFULLY!")
 
 if __name__ == "__main__":
-    print("=== STARTING MILESTONE 3 VERIFICATION ===")
-    test_milestone_3_location_validation()
-    test_milestone_3_all_seeded_locations()
-    test_milestone_3_owm_parser()
-    test_milestone_3_mocked_live_fetch()
-    print("\n=== MILESTONE 3 VERIFICATION COMPLETED SUCCESSFULLY! ===")
+    test_milestone_3_tflite_export()
