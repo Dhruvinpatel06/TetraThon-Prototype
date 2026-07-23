@@ -60,7 +60,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
         {/* Location Dropdown */}
         <div className="flex flex-col">
           <label htmlFor="location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-            📍 Select Location <span className="text-red-500">*</span>
+            Select Location <span className="text-red-500">*</span>
           </label>
           <select
             id="location"
@@ -81,7 +81,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
         {/* Crop Dropdown */}
         <div className="flex flex-col">
           <label htmlFor="crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-            🌾 Select Crop <span className="text-red-500">*</span>
+            Select Crop <span className="text-red-500">*</span>
           </label>
           <select
             id="crop"
@@ -102,7 +102,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
         {/* Sowing Date Picker */}
         <div className="flex flex-col">
           <label htmlFor="sowing-date" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-            📅 Sowing Date <span className="text-red-500">*</span>
+            Sowing Date <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
@@ -119,7 +119,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
         {/* Weather Observation Dropdown */}
         <div className="flex flex-col">
           <label htmlFor="weather-obs" className="text-sm font-semibold text-slate-700 mb-1.5">
-            🌤 Field Weather Observation <span className="text-slate-400 font-normal">(Optional)</span>
+            Field Weather Observation <span className="text-slate-400 font-normal">(Optional)</span>
           </label>
           <select
             id="weather-obs"
@@ -139,7 +139,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
         {/* Photo Upload (Visual Mock - Coming Soon) */}
         <div className="flex flex-col border border-dashed border-slate-200 rounded-xl p-4 bg-slate-50 opacity-70">
           <label className="text-sm font-semibold text-slate-500 mb-1.5 flex items-center gap-1.5">
-            📷 Upload Leaf Image <span className="text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-normal uppercase tracking-wider">Coming Soon</span>
+            Upload Leaf Image <span className="text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded font-normal uppercase tracking-wider">Coming Soon</span>
           </label>
           <input
             type="file"

@@ -50,7 +50,7 @@ export default function SpoilageChart({ crop = 'Cotton', quantity = 10, selected
     <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
-          📉 30-Day Produce Spoilage Value Decay
+          30-Day Produce Spoilage Value Decay
         </h4>
         <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-medium">
           {quantity}q {crop}

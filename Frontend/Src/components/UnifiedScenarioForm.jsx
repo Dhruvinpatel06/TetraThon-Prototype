@@ -137,7 +137,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
-              📊 Unified Intelligence Scenario Form
+              Unified Intelligence Scenario Form
             </h2>
             <p className="text-emerald-100 text-xs mt-1">
               Analyze crop advisory (Module A) and post-harvest recommendations (Module B) simultaneously.
@@ -152,7 +152,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
       {/* Demo Presets Bar */}
       <div className="bg-slate-50 px-6 py-3 border-b border-slate-200">
         <p className="text-xs font-semibold text-slate-500 mb-2 flex items-center gap-1">
-          ⚡ Quick Evaluation Presets (One-Click Demo):
+          Quick Evaluation Presets (One-Click Demo):
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {presets.map((p, idx) => (
@@ -185,7 +185,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
           {/* Location Dropdown */}
           <div className="flex flex-col">
             <label htmlFor="location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-              📍 Select Location <span className="text-red-500">*</span>
+              Select Location <span className="text-red-500">*</span>
             </label>
             <select
               id="location"
@@ -206,7 +206,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
           {/* Crop Dropdown */}
           <div className="flex flex-col">
             <label htmlFor="crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-              🌾 Select Crop <span className="text-red-500">*</span>
+              Select Crop <span className="text-red-500">*</span>
             </label>
             <select
               id="crop"
@@ -227,7 +227,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
           {/* Sowing Date */}
           <div className="flex flex-col">
             <label htmlFor="sowing-date" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-              📅 Sowing Date <span className="text-red-500">*</span>
+              Sowing Date <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
@@ -243,7 +243,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
           {/* Weather Observation */}
           <div className="flex flex-col">
             <label htmlFor="weather-obs" className="text-sm font-semibold text-slate-700 mb-1.5">
-              🌤 Weather Observation <span className="text-slate-400 font-normal">(Optional)</span>
+              Weather Observation <span className="text-slate-400 font-normal">(Optional)</span>
             </label>
             <select
               id="weather-obs"
@@ -263,7 +263,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
           {/* Quantity (Quintals) */}
           <div className="flex flex-col">
             <label htmlFor="quantity" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-              ⚖️ Produce Quantity (Quintals) <span className="text-red-500">*</span>
+              Produce Quantity (Quintals) <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
@@ -282,7 +282,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
           {/* Storage Condition */}
           <div className="flex flex-col">
             <label htmlFor="storage-condition" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
-              🏢 Storage Condition <span className="text-red-500">*</span>
+              Storage Condition <span className="text-red-500">*</span>
             </label>
             <select
               id="storage-condition"
@@ -322,7 +322,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
                 Processing Dual Intelligence Engines...
               </>
             ) : (
-              '🚀 Evaluate Unified Scenario'
+              'Evaluate Unified Scenario'
             )}
           </button>
         </div>

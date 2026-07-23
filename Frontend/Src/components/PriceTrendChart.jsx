@@ -40,7 +40,7 @@ export default function PriceTrendChart({ crop = 'Cotton', location = 'Ahmedabad
     <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
       <div className="flex items-center justify-between mb-2">
         <h4 className="text-base font-bold text-slate-800 flex items-center gap-1.5">
-          📈 APMC Mandi Price Trends (90 Days)
+          APMC Mandi Price Trends (90 Days)
         </h4>
         <span className="text-xs bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md font-medium border border-emerald-100">
           Selected: {location}

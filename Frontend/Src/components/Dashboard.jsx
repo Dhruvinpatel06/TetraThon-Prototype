@@ -24,12 +24,28 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
     }).format(val).replace('INR', '₹')
   }
 
-  const getRecommendationIcon = (rec) => {
-    switch (rec) {
-      case 'sell_now': return '💰'
-      case 'store': return '🏢'
-      case 'transport': return '🚚'
-      default: return '🏆'
+  const getOptionSvg = (key) => {
+    switch (key) {
+      case 'sell_now':
+        return (
+          <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        )
+      case 'store':
+        return (
+          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V10m0 11V10" />
+          </svg>
+        )
+      case 'transport':
+        return (
+          <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1e1 1 0 001-1V9a1 1 0 00-1-1h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 00-.293.707V16m5 0h1" />
+          </svg>
+        )
+      default:
+        return null
     }
   }
 
@@ -74,7 +90,7 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
             Unified Farm & Post-Harvest Intelligence
           </h2>
           <p className="text-emerald-100 text-xs mt-1">
-            📍 {locationName} • 🌾 {cropName} • 📅 Sown {new Date(sowingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} • ⚖️ {quantityQuintals} quintals in {storageLabels[storageCondition]}
+            {locationName} • {cropName} • Sown {new Date(sowingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} • {quantityQuintals} quintals in {storageLabels[storageCondition]}
           </p>
         </div>
 
@@ -83,13 +99,13 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
             onClick={onEditScenario}
             className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition duration-200 flex items-center gap-1.5"
           >
-            ✏️ Edit Scenario
+            Edit Scenario
           </button>
           <button
             onClick={() => window.print()}
             className="bg-white text-slate-800 hover:bg-slate-100 font-bold text-xs px-4 py-2.5 rounded-xl shadow transition duration-200 flex items-center gap-1.5"
           >
-            🖨 Export / Print
+            Export / Print
           </button>
         </div>
       </div>
@@ -101,7 +117,7 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
           <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-5 py-4 text-white flex items-center justify-between">
             <div>
               <h3 className="font-extrabold text-base flex items-center gap-2">
-                🌾 Module A: Precision Crop Advisory
+                Module A: Precision Crop Advisory
               </h3>
               <p className="text-emerald-100 text-xs mt-0.5">Stage & weather-aware recommendations</p>
             </div>
@@ -158,11 +174,13 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
           <div className="bg-gradient-to-r from-teal-700 to-cyan-800 px-5 py-4 text-white flex items-center justify-between">
             <div>
               <h3 className="font-extrabold text-base flex items-center gap-2">
-                📦 Module B: Post-Harvest Loss Planner
+                Module B: Post-Harvest Loss Planner
               </h3>
               <p className="text-teal-100 text-xs mt-0.5">Financial net return decision engine</p>
             </div>
-            <span className="text-2xl">{getRecommendationIcon(recommendation)}</span>
+            <div className="p-1.5 bg-white/20 rounded-lg">
+              {getOptionSvg(recommendation)}
+            </div>
           </div>
 
           <div className="p-5 space-y-4 flex-1">
@@ -188,7 +206,10 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
                   onClick={() => setExpandedOption(expandedOption === 'sell_now' ? null : 'sell_now')}
                   className="w-full p-2.5 bg-slate-50 flex justify-between items-center text-slate-700 font-bold"
                 >
-                  <span>💰 Sell Now ({details.sell_now.market})</span>
+                  <span className="flex items-center gap-2">
+                    {getOptionSvg('sell_now')}
+                    Sell Now ({details.sell_now.market})
+                  </span>
                   <span className="text-emerald-700">{formatCurrency(details.sell_now.net_return)}</span>
                 </button>
                 {expandedOption === 'sell_now' && (
@@ -204,7 +225,10 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
                   onClick={() => setExpandedOption(expandedOption === 'store' ? null : 'store')}
                   className="w-full p-2.5 bg-slate-50 flex justify-between items-center text-slate-700 font-bold"
                 >
-                  <span>🏢 Store 14 Days ({storageLabels[details.store.storage]})</span>
+                  <span className="flex items-center gap-2">
+                    {getOptionSvg('store')}
+                    Store 14 Days ({storageLabels[details.store.storage]})
+                  </span>
                   <span className="text-emerald-700">{formatCurrency(details.store.net_return)}</span>
                 </button>
                 {expandedOption === 'store' && (
@@ -221,7 +245,10 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
                   onClick={() => setExpandedOption(expandedOption === 'transport' ? null : 'transport')}
                   className="w-full p-2.5 bg-slate-50 flex justify-between items-center text-slate-700 font-bold"
                 >
-                  <span>🚚 Transport ({details.transport.market})</span>
+                  <span className="flex items-center gap-2">
+                    {getOptionSvg('transport')}
+                    Transport ({details.transport.market})
+                  </span>
                   <span className="text-emerald-700">{formatCurrency(details.transport.net_return)}</span>
                 </button>
                 {expandedOption === 'transport' && (
@@ -248,13 +275,13 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
           onClick={onGoHome}
           className="flex-1 py-3 px-4 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl transition duration-200"
         >
-          🏠 Return to Home
+          Return to Home
         </button>
         <button
           onClick={onEditScenario}
           className="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition duration-200"
         >
-          🔄 Analyze Another Scenario
+          Analyze Another Scenario
         </button>
       </div>
     </div>

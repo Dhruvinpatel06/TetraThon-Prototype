@@ -3,10 +3,10 @@ import DataStatusIndicator from './DataStatusIndicator'
 
 export default function Layout({ children, currentView = 'home', onNavigate }) {
   const navItems = [
-    { id: 'home', label: '🏠 Home' },
-    { id: 'form', label: '🌾 Crop Advisory' },
-    { id: 'ph-form', label: '📦 Post-Harvest' },
-    { id: 'dashboard-form', label: '📊 Unified Dashboard' },
+    { id: 'home', label: 'Home' },
+    { id: 'form', label: 'Crop Advisory' },
+    { id: 'ph-form', label: 'Post-Harvest' },
+    { id: 'dashboard-form', label: 'Unified Dashboard' },
   ]
 
   return (
@@ -20,7 +20,7 @@ export default function Layout({ children, currentView = 'home', onNavigate }) {
             className="flex items-center gap-2.5 cursor-pointer hover:opacity-90 transition"
           >
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 text-lg font-black shadow-lg">
-              🌾
+              A
             </div>
             <div>
               <h1 className="text-lg font-extrabold tracking-tight text-white flex items-center gap-2">
@@ -72,4 +72,3 @@ export default function Layout({ children, currentView = 'home', onNavigate }) {
     </div>
   )
 }
-

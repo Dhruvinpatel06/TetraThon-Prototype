@@ -1,4 +1,4 @@
-# ArgiTech — Precision Agriculture & Post-Harvest Decision Engine
+# ArgiTech - Precision Agriculture & Post-Harvest Decision Engine
 
 [![Phase 0 Prototype](https://img.shields.io/badge/Status-Phase_0_Submission-emerald?style=for-the-badge)](https://github.com/Dhruvinpatel06/TetraThon-Prototype)
 [![Stack](https://img.shields.io/badge/Stack-FastAPI%20%7C%20React%20%7C%20Recharts%20%7C%20SQLite-teal?style=for-the-badge)](https://github.com/Dhruvinpatel06/TetraThon-Prototype)
@@ -202,7 +202,7 @@ Contributions are welcome! Please follow these steps:
 
 ## Team & Acknowledgments
 
-Built for **TetraTHON 2026** — Precision AgriTech Track.
+Built for **TetraTHON 2026** - Precision AgriTech Track.
 
 * **Om B Patel** ([@byt-ctrl](https://github.com/byt-ctrl))
 * **Mithil Desai** ([@mithildesai24](https://github.com/PixelPirate-24))

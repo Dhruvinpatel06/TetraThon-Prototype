@@ -69,7 +69,7 @@ export default function App() {
                   onClick={() => setView('dashboard-form')}
                   className="bg-white text-emerald-950 font-extrabold text-sm py-3 px-6 rounded-xl shadow-lg hover:bg-emerald-50 transition duration-200 flex items-center gap-2"
                 >
-                  🚀 Open Unified Dashboard
+                  Open Unified Dashboard
                 </button>
               </div>
             </div>
@@ -92,7 +92,7 @@ export default function App() {
                 onClick={() => setView('dashboard-form')}
                 className="w-full inline-flex items-center justify-center bg-emerald-500 text-slate-950 font-bold py-2.5 px-4 rounded-xl shadow hover:bg-emerald-400 transition duration-200 gap-2 text-xs"
               >
-                📊 Open Dashboard
+                Open Dashboard
               </button>
             </div>
 
@@ -111,7 +111,7 @@ export default function App() {
                 onClick={() => setView('form')}
                 className="w-full inline-flex items-center justify-center bg-white text-emerald-900 font-bold py-2.5 px-4 rounded-xl shadow hover:bg-emerald-50 transition duration-200 gap-2 text-xs"
               >
-                🌾 Crop Advisory
+                Crop Advisory
               </button>
             </div>
 
@@ -130,7 +130,7 @@ export default function App() {
                 onClick={() => setView('ph-form')}
                 className="w-full inline-flex items-center justify-center bg-white text-teal-900 font-bold py-2.5 px-4 rounded-xl shadow hover:bg-teal-50 transition duration-200 gap-2 text-xs"
               >
-                📦 Post-Harvest Plan
+                Post-Harvest Plan
               </button>
             </div>
           </div>

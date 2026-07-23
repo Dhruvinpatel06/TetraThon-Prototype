@@ -24,17 +24,28 @@ export default function PostHarvestResult({ result, inputs, onNewPlan, onGoHome 
     setExpandedOption(expandedOption === option ? null : option)
   }
 
-  // Icons for recommended strategy
-  const getRecommendationIcon = (rec) => {
-    switch (rec) {
+  const getOptionSvg = (key) => {
+    switch (key) {
       case 'sell_now':
-        return '💰'
+        return (
+          <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        )
       case 'store':
-        return '🏢'
+        return (
+          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5m0 0h4m-4 0V10m0 11V10" />
+          </svg>
+        )
       case 'transport':
-        return '🚚'
+        return (
+          <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1e1 1 0 001-1V9a1 1 0 00-1-1h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 00-.293.707V16m5 0h1" />
+          </svg>
+        )
       default:
-        return '🏆'
+        return null
     }
   }
 
@@ -47,7 +58,7 @@ export default function PostHarvestResult({ result, inputs, onNewPlan, onGoHome 
         </span>
         <h2 className="text-2xl font-extrabold mt-3">Post-Harvest Plan</h2>
         <p className="text-emerald-100 text-sm mt-1">
-          🌾 {cropName} • {quantityQuintals} Quintals • {storageLabels[storageCondition]} @ {locationName}
+          {cropName} • {quantityQuintals} Quintals • {storageLabels[storageCondition]} @ {locationName}
         </p>
       </div>
 
@@ -58,7 +69,9 @@ export default function PostHarvestResult({ result, inputs, onNewPlan, onGoHome 
             <span className="text-xs font-bold uppercase tracking-wider bg-white bg-opacity-20 px-2.5 py-0.5 rounded-full">
               Recommended Strategy
             </span>
-            <span className="text-2xl">{getRecommendationIcon(recommendation)}</span>
+            <div className="p-1.5 bg-white/20 rounded-lg">
+              {getOptionSvg(recommendation)}
+            </div>
           </div>
 
           <div className="p-5 space-y-4">
@@ -89,7 +102,7 @@ export default function PostHarvestResult({ result, inputs, onNewPlan, onGoHome 
               className="w-full flex items-center justify-between p-4 focus:outline-none text-left"
             >
               <div className="flex items-center gap-3">
-                <span className="p-1.5 bg-slate-100 rounded-lg text-sm">💰</span>
+                <span className="p-1.5 bg-slate-100 rounded-lg">{getOptionSvg('sell_now')}</span>
                 <div>
                   <h5 className="font-bold text-slate-700 text-sm">Sell Now</h5>
                   <p className="text-xs text-slate-400">Sell at nearest market immediately</p>
@@ -135,7 +148,7 @@ export default function PostHarvestResult({ result, inputs, onNewPlan, onGoHome 
               className="w-full flex items-center justify-between p-4 focus:outline-none text-left"
             >
               <div className="flex items-center gap-3">
-                <span className="p-1.5 bg-slate-100 rounded-lg text-sm">🏢</span>
+                <span className="p-1.5 bg-slate-100 rounded-lg">{getOptionSvg('store')}</span>
                 <div>
                   <h5 className="font-bold text-slate-700 text-sm">Store for 14 Days</h5>
                   <p className="text-xs text-slate-400">Delay sale to hedge for higher future price</p>
@@ -185,7 +198,7 @@ export default function PostHarvestResult({ result, inputs, onNewPlan, onGoHome 
               className="w-full flex items-center justify-between p-4 focus:outline-none text-left"
             >
               <div className="flex items-center gap-3">
-                <span className="p-1.5 bg-slate-100 rounded-lg text-sm">🚚</span>
+                <span className="p-1.5 bg-slate-100 rounded-lg">{getOptionSvg('transport')}</span>
                 <div>
                   <h5 className="font-bold text-slate-700 text-sm">Transport to Best Market</h5>
                   <p className="text-xs text-slate-400">Sell at market with highest net price</p>
