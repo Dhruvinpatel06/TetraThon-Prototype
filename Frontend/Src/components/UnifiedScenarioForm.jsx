@@ -12,10 +12,30 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
   const [quantityQuintals, setQuantityQuintals] = useState('10.0')
   const [storageCondition, setStorageCondition] = useState('warehouse')
 
+  const [leafPhoto, setLeafPhoto] = useState(null)
+  const [leafResult, setLeafResult] = useState(null)
+  const [isClassifying, setIsClassifying] = useState(false)
+
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
 
   const today = new Date().toISOString().split('T')[0]
+
+  const handleLeafUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    setLeafPhoto(file)
+    setIsClassifying(true)
+    setLeafResult(null)
+    try {
+      const result = await api.postLeafClassify(file)
+      setLeafResult(result)
+    } catch (err) {
+      setLeafResult({ error: err.message || 'Classification failed' })
+    } finally {
+      setIsClassifying(false)
+    }
+  }
 
   const applyPreset = (preset) => {
     setError(null)
@@ -118,10 +138,12 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
           sowingDate,
           weatherObservation,
           quantityQuintals: qty,
-          storageCondition
+          storageCondition,
+          leafResult
         },
         advisory: advisoryResult,
-        postHarvest: postHarvestResult
+        postHarvest: postHarvestResult,
+        leafResult: leafResult
       })
     } catch (err) {
       setError(err.message || 'Failed to generate unified scenario recommendations.')
@@ -144,7 +166,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
             </p>
           </div>
           <span className="hidden sm:inline-block bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold">
-            Phase 0 Engine
+            Phase 1 AI Engine
           </span>
         </div>
       </div>
@@ -295,6 +317,48 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
               <option value="warehouse">Warehouse (Covered)</option>
               <option value="cold_storage">Cold Storage</option>
             </select>
+          </div>
+
+          {/* Photo Upload Field (Full Width) */}
+          <div className="col-span-1 md:col-span-2 flex flex-col border border-dashed border-emerald-200 rounded-xl p-4 bg-emerald-50/70">
+            <label className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1.5">
+              📷 Upload Leaf Image <span className="text-xs bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded font-normal uppercase tracking-wider">Optional AI Analysis</span>
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleLeafUpload}
+              disabled={isSubmitting || isClassifying}
+              className="text-xs text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-600 file:text-white file:cursor-pointer hover:file:bg-emerald-700"
+            />
+            {isClassifying && (
+              <div className="flex items-center gap-2 mt-2 text-xs text-emerald-700 font-medium">
+                <svg className="animate-spin h-3.5 w-3.5 text-emerald-600" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Analyzing leaf image...
+              </div>
+            )}
+            {leafResult && !leafResult.error && (
+              <div className="mt-2.5 p-2.5 bg-white rounded-lg border border-emerald-100 shadow-sm">
+                <p className="text-xs font-bold text-emerald-900 capitalize">
+                  {leafResult.predicted_class.replace(/_/g, ' ')}
+                  <span className="font-normal text-slate-500 ml-1.5">
+                    ({Math.round(leafResult.confidence * 100)}% confidence)
+                  </span>
+                </p>
+                {leafResult.is_healthy ? (
+                  <p className="text-[11px] text-green-700 font-medium mt-0.5">✅ Healthy crop — no disease symptoms detected</p>
+                ) : (
+                  <p className="text-[11px] text-amber-700 font-medium mt-0.5">⚠️ Disease symptoms detected — consult local officer</p>
+                )}
+              </div>
+            )}
+            {leafResult?.error && (
+              <p className="text-xs text-red-600 mt-2 font-medium">Classification failed: {leafResult.error}</p>
+            )}
+            <p className="text-xs text-slate-400 mt-1.5">AI-assisted analysis — not a certified diagnosis.</p>
           </div>
         </div>
 
