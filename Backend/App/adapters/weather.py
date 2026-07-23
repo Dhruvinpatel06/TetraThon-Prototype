@@ -109,6 +109,23 @@ def _parse_owm_forecast(data: dict) -> list[dict]:
             "humidity": round(sum(vals["humidity"]) / len(vals["humidity"])),
             "wind_kph": round(sum(vals["wind"]) / len(vals["wind"]))
         })
+
+    # Ensure output always has 7 days by projecting remaining days if needed
+    if forecast:
+        last_date = datetime.date.fromisoformat(forecast[-1]["date"])
+        while len(forecast) < 7:
+            i = len(forecast) + 1
+            last_date += datetime.timedelta(days=1)
+            last_val = forecast[-1]
+            forecast.append({
+                "day": i,
+                "date": last_date.isoformat(),
+                "temp_high": last_val["temp_high"],
+                "temp_low": last_val["temp_low"],
+                "rain_chance": last_val["rain_chance"],
+                "humidity": last_val["humidity"],
+                "wind_kph": last_val["wind_kph"]
+            })
     return forecast
 
 

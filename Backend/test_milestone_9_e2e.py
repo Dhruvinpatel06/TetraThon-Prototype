@@ -109,8 +109,8 @@ def test_e2e_all_20_scenarios_post_harvest():
 
 def test_e2e_fallback_toggle():
     print("\nTesting Milestone 9: Full System Behavior under Fallback Mode...")
-    with patch("App.adapters.config.OPENWEATHER_API_KEY", ""):
-        with patch("App.adapters.config.AGMARKNET_API_KEY", ""):
+    with patch("App.adapters.weather.OPENWEATHER_API_KEY", ""):
+        with patch("App.adapters.market_prices.AGMARKNET_API_KEY", ""):
             h_res = client.get("/api/health")
             assert h_res.status_code == 200
             assert h_res.json()["adapters"]["weather"] == "mock"

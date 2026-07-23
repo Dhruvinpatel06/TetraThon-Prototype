@@ -21,7 +21,7 @@ OPENWEATHER_TIMEOUT = int(os.getenv("OPENWEATHER_TIMEOUT", "5"))  # seconds
 
 # Agmarknet / data.gov.in Configuration
 AGMARKNET_API_KEY = os.getenv("AGMARKNET_API_KEY", "")
-AGMARKNET_BASE_URL = os.getenv("AGMARKNET_BASE_URL", "https://api.data.gov.in/resource")
+AGMARKNET_BASE_URL = os.getenv("AGMARKNET_BASE_URL", "https://api.data.gov.in/resource/9ef481e1-62ba-4298-a958-7de6d064ec13")
 AGMARKNET_TIMEOUT = int(os.getenv("AGMARKNET_TIMEOUT", "5"))  # seconds
 
 # Fallback control flags

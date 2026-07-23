@@ -17,8 +17,12 @@ MARKET_IDS = {
     "Anand APMC": "GJ005",
 }
 
+import time
+
 _live_prices_cache = {}
 _csv_prices_cache = {}
+_failed_fetch_cache = {}  # (crop, market) -> timestamp of last failure
+FAILURE_CACHE_TTL = 60  # seconds to cache a failed API fetch before retrying
 
 
 def _fetch_live_prices(crop: str, market: str) -> list[dict] | None:
@@ -31,9 +35,29 @@ def _fetch_live_prices(crop: str, market: str) -> list[dict] | None:
     if not market_id:
         logger.warning(f"Market Prices: Unknown market ID for {market}, skipping live fetch")
         return None
+
+    cache_key = (crop, market)
+    if cache_key in _live_prices_cache:
+        return _live_prices_cache[cache_key]
+
+    # Check if a recent failure occurred to avoid repeated blocking timeouts
+    last_failure = _failed_fetch_cache.get(cache_key)
+    if last_failure and (time.time() - last_failure < FAILURE_CACHE_TTL):
+        return None
     
     try:
-        with httpx.Client(timeout=AGMARKNET_TIMEOUT) as client:
+        import ssl
+        ssl_ctx = ssl.create_default_context()
+        try:
+            ssl_ctx.minimum_version = ssl.TLSVersion.TLS1_2
+            ssl_ctx.maximum_version = ssl.TLSVersion.TLS1_2
+        except Exception:
+            pass
+
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        }
+        with httpx.Client(timeout=AGMARKNET_TIMEOUT, headers=headers, verify=ssl_ctx) as client:
             resp = client.get(AGMARKNET_BASE_URL, params={
                 "api-key": AGMARKNET_API_KEY,
                 "format": "json",
@@ -55,10 +79,14 @@ def _fetch_live_prices(crop: str, market: str) -> list[dict] | None:
             
             records.sort(key=lambda x: x["date"])
             if records:
+                _live_prices_cache[cache_key] = records
                 return records
     except Exception as exc:
         logger.warning(f"Market Prices API call failed for {crop} at {market}: {exc}. Falling back to CSV data.")
+        _failed_fetch_cache[cache_key] = time.time()
         return None
+
+    _failed_fetch_cache[cache_key] = time.time()
     return None
 
 
@@ -75,7 +103,6 @@ def load_prices(crop: str, market: str) -> list[dict]:
     live_data = _fetch_live_prices(crop, market)
     if live_data:
         logger.info(f"Market Prices: live data used for {crop} at {market}")
-        _live_prices_cache[cache_key] = live_data
         return live_data
     
     # Fallback to CSV (original Phase 0 logic)
