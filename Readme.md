@@ -187,11 +187,11 @@ npm run dev
 
 ## Screenshots
 
-> All screenshots live in [`docs/screenshots/`](./docs/screenshots/). Replace placeholders with actual captures.
+> All screenshots live in [`Docs/screenshots/`](./Docs/screenshots/).
 
 ### Home Page
 
-![Home page showing hero banner and module selection cards](./docs/screenshots/home-page.png)
+![Home page showing hero banner and module selection cards](./Docs/screenshots/home-page.png)
 
 ---
 
@@ -199,7 +199,7 @@ npm run dev
 
 | Input Form | Results |
 |:---:|:---:|
-| ![Module A input form — location, crop, sowing date, weather fields](./docs/screenshots/advisory-form.png) | ![Module A results — ranked top-3 advisories with confidence badges](./docs/screenshots/advisory-results.png) |
+| ![Module A input form — location, crop, sowing date, weather fields](./Docs/screenshots/advisory-form.png) | ![Module A results — ranked top-3 advisories with confidence badges](./Docs/screenshots/advisory-results.png) |
 
 ---
 
@@ -207,7 +207,7 @@ npm run dev
 
 | Input Form | Results |
 |:---:|:---:|
-| ![Module B input form — crop quantity and storage condition selection](./docs/screenshots/post-harvest-form.png) | ![Module B results — optimal Sell Now / Store / Transport recommendation with net returns](./docs/screenshots/post-harvest-results.png) |
+| ![Module B input form — crop quantity and storage condition selection](./Docs/screenshots/post-harvest-form.png) | ![Module B results — optimal Sell Now / Store / Transport recommendation with net returns](./Docs/screenshots/post-harvest-results.png) |
 
 ---
 
@@ -215,7 +215,7 @@ npm run dev
 
 | Input Form | Results |
 |:---:|:---:|
-| ![Unified scenario form — all fields plus optional leaf image upload](./docs/screenshots/unified-dashboard-form.png) | ![Unified dashboard — side-by-side advisory + post-harvest panels with Recharts visualizations](./docs/screenshots/unified-dashboard.png) |
+| ![Unified scenario form — all fields plus optional leaf image upload](./Docs/screenshots/unified-dashboard-form.png) | ![Unified dashboard — side-by-side advisory + post-harvest panels with Recharts visualizations](./Docs/screenshots/unified-dashboard.png) |
 
 ---
 
