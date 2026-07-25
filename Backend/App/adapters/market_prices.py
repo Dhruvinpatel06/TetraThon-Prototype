@@ -26,8 +26,8 @@ FAILURE_CACHE_TTL = 60  # seconds to cache a failed API fetch before retrying
 
 def _fetch_live_prices(crop: str, market: str) -> list[dict] | None:
     """Attempt to fetch prices from data.gov.in API. Returns None on failure."""
-    if not AGMARKNET_API_KEY:
-        logger.warning(f"Market Prices: No AGMARKNET_API_KEY set, skipping live fetch for {crop} at {market}")
+    if not AGMARKNET_API_KEY or "your_" in AGMARKNET_API_KEY.lower():
+        logger.warning(f"Market Prices: No valid AGMARKNET_API_KEY set, skipping live fetch for {crop} at {market}")
         return None
     
     market_id = MARKET_IDS.get(market)

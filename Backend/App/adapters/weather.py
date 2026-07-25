@@ -66,8 +66,8 @@ def _fetch_live_forecast(location: str) -> dict | None:
         if now - ts < WEATHER_CACHE_TTL:
             return cached_data
 
-    if not OPENWEATHER_API_KEY:
-        logger.warning(f"Weather: No OPENWEATHER_API_KEY set, skipping live fetch for {location}")
+    if not OPENWEATHER_API_KEY or "your_" in OPENWEATHER_API_KEY.lower():
+        logger.warning(f"Weather: No valid OPENWEATHER_API_KEY set, skipping live fetch for {location}")
         return None
     
     coords = LOCATION_COORDS.get(location)
