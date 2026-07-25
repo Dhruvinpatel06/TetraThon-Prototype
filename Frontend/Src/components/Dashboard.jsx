@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import SpoilageChart from './SpoilageChart'
 import PriceTrendChart from './PriceTrendChart'
 import LeafResult from './LeafResult'
-import { storageLabels, formatCurrency, getOptionSvg, getAdvisoryIcon } from '../utils'
+import { getStorageLabel, formatCurrency, getOptionSvg, getAdvisoryIcon } from '../utils'
 import { api } from '../api'
 
 export default function Dashboard({ inputs, advisoryResult, postHarvestResult, onEditScenario, onGoHome }) {
@@ -64,7 +64,7 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
             Unified Farm & Post-Harvest Intelligence
           </h2>
           <p className="text-emerald-100 text-xs mt-1">
-            {locationName} • {cropName} • Sown {new Date(sowingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} • {quantityQuintals} quintals in {storageLabels[storageCondition]}
+            {locationName} • {cropName} • Sown {new Date(sowingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} • {quantityQuintals} quintals in {getStorageLabel(storageCondition)}
           </p>
         </div>
 
@@ -208,7 +208,7 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
                 >
                   <span className="flex items-center gap-2">
                     {getOptionSvg('store')}
-                    Store 14 Days ({storageLabels[details.store.storage]})
+                    Store 14 Days ({getStorageLabel(details.store.storage)})
                   </span>
                   <span className="text-emerald-700">{formatCurrency(details.store.net_return)}</span>
                 </button>
