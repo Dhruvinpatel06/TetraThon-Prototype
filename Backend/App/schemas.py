@@ -1,26 +1,22 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Literal
 
 
 class LocationOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
     state: str
     latitude: float
     longitude: float
 
-    class Config:
-        from_attributes = True
-
 
 class CropOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     name: str
     typical_duration_days: int
     category: str
-
-    class Config:
-        from_attributes = True
 
 
 class AdvisoryInput(BaseModel):
@@ -64,6 +60,6 @@ class PostHarvestOutput(BaseModel):
     option_label: str
     expected_return: float
     expected_return_per_quintal: float
-    details: dict
+    details: dict[str, OptionDetail] | dict
     reason: str
     session_id: int
