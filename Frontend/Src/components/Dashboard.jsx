@@ -16,22 +16,32 @@ export default function Dashboard({ inputs, advisoryResult, postHarvestResult, o
   const { recommendation, option_label, expected_return, expected_return_per_quintal, details, reason, session_id: phSessionId } = postHarvestResult
 
   useEffect(() => {
+    let isMounted = true
+
     if (cropName) {
       api.priceHistory(cropName, locationName)
         .then(res => {
-          if (res && res.history && res.history.length > 0) {
+          if (isMounted && res && res.history && res.history.length > 0) {
             setTrendHistory(res.history)
           }
         })
-        .catch(err => console.warn("Price history fetch failed, using fallback chart data:", err))
+        .catch(err => {
+          if (isMounted) console.warn("Price history fetch failed, using fallback chart data:", err)
+        })
 
       api.spoilageCurve(cropName, quantityQuintals)
         .then(res => {
-          if (res && res.curve && res.curve.length > 0) {
+          if (isMounted && res && res.curve && res.curve.length > 0) {
             setSpoilageData(res.curve)
           }
         })
-        .catch(err => console.warn("Spoilage curve fetch failed, using fallback chart data:", err))
+        .catch(err => {
+          if (isMounted) console.warn("Spoilage curve fetch failed, using fallback chart data:", err)
+        })
+    }
+
+    return () => {
+      isMounted = false
     }
   }, [cropName, locationName, quantityQuintals])
 

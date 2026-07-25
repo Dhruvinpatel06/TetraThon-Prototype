@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from ..database import get_db
 from .. import models, schemas
 from ..engine.decision import generate_recommendation
+from ..limiter import limiter
 
 router = APIRouter()
 
@@ -78,7 +79,8 @@ def create_post_harvest_plan(payload: schemas.PostHarvestInput, db: Session = De
 
 
 @router.get("/price-history")
-def get_price_history(crop: str = "Cotton", location: str = "Ahmedabad"):
+@limiter.limit("30/minute")
+def get_price_history(request: Request, crop: str = "Cotton", location: str = "Ahmedabad"):
     from ..adapters.market_prices import load_prices
     target_crop = crop.strip().title() if crop else "Cotton"
     market_names = [
@@ -118,7 +120,8 @@ def get_price_history(crop: str = "Cotton", location: str = "Ahmedabad"):
 
 
 @router.get("/spoilage-curve")
-def get_spoilage_curve(crop: str = "Cotton", quantity: float = 10.0):
+@limiter.limit("30/minute")
+def get_spoilage_curve(request: Request, crop: str = "Cotton", quantity: float = 10.0):
     from ..engine.spoilage import compute_spoilage
     from ..adapters.market_prices import get_latest_price
     
