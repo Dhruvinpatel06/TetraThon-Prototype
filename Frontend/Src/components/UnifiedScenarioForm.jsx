@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { api } from '../api'
+import { useLeafUpload } from '../useLeafUpload'
 
 export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess, onCancel }) {
   const [locationName, setLocationName] = useState('Ahmedabad')
@@ -12,30 +13,10 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
   const [quantityQuintals, setQuantityQuintals] = useState('10.0')
   const [storageCondition, setStorageCondition] = useState('warehouse')
 
-  const [leafPhoto, setLeafPhoto] = useState(null)
-  const [leafResult, setLeafResult] = useState(null)
-  const [isClassifying, setIsClassifying] = useState(false)
+  const { leafResult, isClassifying, handleLeafUpload } = useLeafUpload()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
-
-  const today = new Date().toISOString().split('T')[0]
-
-  const handleLeafUpload = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    setLeafPhoto(file)
-    setIsClassifying(true)
-    setLeafResult(null)
-    try {
-      const result = await api.postLeafClassify(file)
-      setLeafResult(result)
-    } catch (err) {
-      setLeafResult({ error: err.message || 'Classification failed' })
-    } finally {
-      setIsClassifying(false)
-    }
-  }
 
   const applyPreset = (preset) => {
     setError(null)

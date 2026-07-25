@@ -1,5 +1,4 @@
 {
-  "_notes": "N-P-K in kg/acre, simplified split-dose schedule. Not certified agronomy advice — flag that in UI copy.",
   "Cotton": [
     {"stage": "germination", "days_range": [0, 20], "npk_kg_per_acre": {"N": 20, "P": 20, "K": 0}, "note": "Basal dose at sowing"},
     {"stage": "vegetative", "days_range": [21, 70], "npk_kg_per_acre": {"N": 25, "P": 0, "K": 0}, "note": "First top dressing"},

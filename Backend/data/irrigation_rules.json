@@ -1,5 +1,4 @@
 {
-  "_notes": "Growth stage derived from days-since-sowing / typical_duration_days. interval_days = how often to irrigate; skip_if_rain_expected suppresses the advisory if rain is forecast within skip_window_days.",
   "Cotton": [
     {"stage": "germination", "days_range": [0, 20], "interval_days": 4, "skip_if_rain_expected": true, "skip_window_days": 2},
     {"stage": "vegetative", "days_range": [21, 70], "interval_days": 7, "skip_if_rain_expected": true, "skip_window_days": 3},

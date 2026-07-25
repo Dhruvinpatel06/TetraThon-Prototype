@@ -1,8 +1,9 @@
 import csv
 import logging
+import time
 from pathlib import Path
 import httpx
-from .config import AGMARKNET_API_KEY, AGMARKNET_BASE_URL, AGMARKNET_TIMEOUT
+from .config import AGMARKNET_API_KEY, AGMARKNET_BASE_URL, AGMARKNET_TIMEOUT, PRICE_FALLBACK_ENABLED
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +17,6 @@ MARKET_IDS = {
     "Rajkot APMC": "GJ004",
     "Anand APMC": "GJ005",
 }
-
-import time
 
 _live_prices_cache = {}
 _csv_prices_cache = {}
@@ -106,6 +105,10 @@ def load_prices(crop: str, market: str) -> list[dict]:
         return live_data
     
     # Fallback to CSV (original Phase 0 logic)
+    if not PRICE_FALLBACK_ENABLED:
+        logger.warning(f"Market Prices: live data unavailable for {crop} at {market} and fallback disabled.")
+        return []
+
     logger.info(f"Market Prices: fallback to CSV for {crop} at {market}")
     if cache_key in _csv_prices_cache:
         return _csv_prices_cache[cache_key]

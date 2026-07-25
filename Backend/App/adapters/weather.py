@@ -1,7 +1,7 @@
 import datetime
 import logging
 import httpx
-from .config import OPENWEATHER_API_KEY, OPENWEATHER_BASE_URL, OPENWEATHER_TIMEOUT
+from .config import OPENWEATHER_API_KEY, OPENWEATHER_BASE_URL, OPENWEATHER_TIMEOUT, WEATHER_FALLBACK_ENABLED
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +128,6 @@ def _parse_owm_forecast(data: dict) -> list[dict]:
             })
     return forecast
 
-
 def get_forecast(location: str) -> dict:
     """
     Returns 7-day weather forecast. Attempts live API first, falls back to mock.
@@ -149,6 +148,9 @@ def get_forecast(location: str) -> dict:
         logger.info(f"Weather: live data used for {matched_location}")
         return live_result
     
+    if not WEATHER_FALLBACK_ENABLED:
+        raise RuntimeError(f"Live weather data unavailable for {matched_location} and fallback is disabled.")
+
     # Fallback to deterministic mock
     logger.info(f"Weather: fallback to mock for {matched_location}")
     return _get_mock_forecast(matched_location)

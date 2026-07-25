@@ -58,13 +58,6 @@ class OptionDetail(BaseModel):
     distance_km: float | None = None
 
 
-class StoreOption(OptionDetail):
-    store_days: int
-    storage: str
-    spoilage_loss: float
-    storage_cost: float
-    future_price_per_quintal: float
-
 
 class PostHarvestOutput(BaseModel):
     recommendation: Literal["sell_now", "store", "transport"]
