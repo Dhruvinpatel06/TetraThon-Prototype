@@ -14,7 +14,8 @@ CLASSES = [
     "tomato_healthy"
 ]
 
-DATASET_DIR = Path("Backend/data/plantvillage_subset")
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATASET_DIR = BASE_DIR / "Backend" / "data" / "plantvillage_subset"
 
 def create_bmp_leaf(class_name: str, width: int = 224, height: int = 224) -> bytes:
     """

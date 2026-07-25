@@ -1,16 +1,7 @@
-import React, { useState, useEffect } from 'react'
-import { api } from '../api'
+import React from 'react'
 
-export default function DataStatusIndicator() {
-  const [status, setStatus] = useState(null)
-
-  useEffect(() => {
-    api.health()
-      .then(data => setStatus(data.adapters))
-      .catch(() => setStatus({ weather: 'mock', prices: 'mock' }))
-  }, [])
-
-  if (!status) return null
+export default function DataStatusIndicator({ adapters }) {
+  const status = adapters || { weather: 'mock', prices: 'mock' }
 
   const isWeatherLive = status.weather === 'live'
   const isPriceLive = status.prices === 'live'

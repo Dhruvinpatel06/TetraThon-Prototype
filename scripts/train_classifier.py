@@ -6,9 +6,10 @@ import struct
 from pathlib import Path
 
 # Paths & Settings
-DATASET_DIR = Path("Backend/data/plantvillage_subset")
-CLASS_NAMES_PATH = Path("Backend/models/class_names.json")
-MODEL_OUTPUT_PATH = Path("Backend/models/leaf_classifier.keras")
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATASET_DIR = BASE_DIR / "Backend" / "data" / "plantvillage_subset"
+CLASS_NAMES_PATH = BASE_DIR / "Backend" / "models" / "class_names.json"
+MODEL_OUTPUT_PATH = BASE_DIR / "Backend" / "models" / "leaf_classifier.keras"
 
 IMG_SIZE = 224
 
@@ -154,7 +155,7 @@ class LeafClassifierNN:
 
     def save(self, filepath: Path):
         model_data = {
-            "model_type": "MobileNetV2_Transfer_LeafClassifier",
+            "model_type": "MLP_LeafClassifier",
             "input_dim": self.input_dim,
             "hidden_dim": self.hidden_dim,
             "num_classes": self.num_classes,
@@ -167,7 +168,7 @@ class LeafClassifierNN:
             json.dump(model_data, f, indent=2)
 
 def train_model():
-    print("Starting MobileNetV2 Transfer Learning classifier training...")
+    print("Starting MLP Leaf Classifier training...")
     random.seed(42)
 
     class_names = load_class_names()

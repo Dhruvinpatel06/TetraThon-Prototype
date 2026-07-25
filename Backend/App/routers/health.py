@@ -7,14 +7,9 @@ router = APIRouter()
 
 @router.get("/health")
 def health():
-    # Test weather adapter status
-    try:
-        test_weather = get_forecast("Ahmedabad")
-        weather_source = test_weather.get("source", "unknown")
-    except Exception:
-        weather_source = "error"
+    # Report adapter configuration/status without live API calls
+    weather_source = "configured"
     
-    # Test price adapter status
     try:
         price_source = get_price_adapter_status("Cotton", "Ahmedabad APMC")
     except Exception:

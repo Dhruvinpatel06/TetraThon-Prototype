@@ -6,12 +6,12 @@ from .database import Base, engine
 from .seed import seed
 from .routers import advisory, rules, health, locations, crops, post_harvest, leaf_classify
 
-app = FastAPI(title="AgriTech API")
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
-    seed()
+    import os
+    if os.getenv("AUTO_SEED", "false").lower() == "true":
+        seed()
     yield
 
 
