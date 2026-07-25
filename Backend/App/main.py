@@ -19,7 +19,14 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="AgriTech API", lifespan=lifespan)
+app = FastAPI(
+    title="AgriTech API",
+    description="Precision Crop Advisory & Post-Harvest Decision Engine API",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc",
+    lifespan=lifespan
+)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(SlowAPIMiddleware)

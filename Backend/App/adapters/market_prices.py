@@ -135,15 +135,19 @@ def load_prices(crop: str, market: str) -> list[dict]:
     return _csv_prices_cache.get(cache_key, [])
 
 
+# Offset in historical price array representing the baseline evaluation date (14 days before end of dataset)
+EVALUATION_SERIES_OFFSET = 15
+
+
 def get_latest_price(crop: str, market: str) -> float:
     """
-    Returns the latest price for the crop at the given market.
-    Evaluation date is 14 days before the end of the series.
+    Returns the latest baseline price for the crop at the given market.
+    Evaluation date is 14 days before the end of the historical series.
     """
     prices = load_prices(crop, market)
     if not prices:
         return 0.0
-    target_idx = max(0, len(prices) - 15)
+    target_idx = max(0, len(prices) - EVALUATION_SERIES_OFFSET)
     return prices[target_idx]["price"]
 
 
@@ -154,7 +158,7 @@ def get_future_price(crop: str, market: str, days_from_now: int) -> float:
     prices = load_prices(crop, market)
     if not prices:
         return 0.0
-    target_idx = max(0, len(prices) - 15)
+    target_idx = max(0, len(prices) - EVALUATION_SERIES_OFFSET)
     future_idx = target_idx + days_from_now
     if future_idx < len(prices):
         return prices[future_idx]["price"]

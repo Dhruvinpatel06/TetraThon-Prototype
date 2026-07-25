@@ -3,8 +3,7 @@ services:
     name: agritech-backend
     env: python
     buildCommand: pip install -r Backend/requirements.txt
-    startCommand: uvicorn App.main:app --host 0.0.0.0 --port $PORT
     rootDir: Backend
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.4
+        value: 3.12.1
