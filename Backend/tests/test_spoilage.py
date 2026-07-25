@@ -40,3 +40,17 @@ def test_spoilage_edge_cases():
     # Negative days
     neg_days = compute_spoilage("Cotton", "warehouse", -5, 10000.0)
     assert neg_days["value_remaining"] == 10000.0
+
+
+@pytest.mark.parametrize("crop,storage,days,value", [
+    ("Cotton", "open", 10, 10000.0),
+    ("Wheat", "warehouse", 14, 25000.0),
+    ("Groundnut", "cold_storage", 30, 40000.0),
+    ("Tomato", "warehouse", 7, 15000.0),
+])
+def test_spoilage_parameterized(crop, storage, days, value):
+    res = compute_spoilage(crop, storage, days, value)
+    assert "value_remaining" in res
+    assert "total_loss" in res
+    assert "loss_percent" in res
+    assert res["value_remaining"] + res["total_loss"] == pytest.approx(value)

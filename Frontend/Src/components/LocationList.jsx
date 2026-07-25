@@ -8,7 +8,7 @@ export default function LocationList({ locations }) {
         {locations.map((l) => (
           <li key={l.id} className="flex justify-between py-1 border-b border-slate-100 last:border-b-0">
             <span className="font-medium text-slate-800">{l.name}</span>
-            <span className="text-xs text-slate-400">{l.latitude.toFixed(2)}°, {l.longitude.toFixed(2)}°</span>
+            <span className="text-xs text-slate-400">{l.latitude != null ? l.latitude.toFixed(2) : '--'}°, {l.longitude != null ? l.longitude.toFixed(2) : '--'}°</span>
           </li>
         ))}
       </ul>

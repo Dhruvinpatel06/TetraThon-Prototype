@@ -58,11 +58,11 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
 
         {/* Crop Dropdown */}
         <div className="flex flex-col">
-          <label htmlFor="crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+          <label htmlFor="ph-crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
             Select Crop <span className="text-red-500">*</span>
           </label>
           <select
-            id="crop"
+            id="ph-crop"
             value={cropName}
             aria-describedby={error ? "ph-error" : undefined}
             onChange={(e) => setCropName(e.target.value)}
@@ -80,12 +80,12 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
 
         {/* Quantity (Quintals) Input */}
         <div className="flex flex-col">
-          <label htmlFor="quantity" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+          <label htmlFor="ph-quantity" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
             Quantity (Quintals) <span className="text-red-500">*</span>
           </label>
           <input
             type="number"
-            id="quantity"
+            id="ph-quantity"
             min="0.5"
             step="0.5"
             placeholder="e.g. 10.0"
@@ -100,11 +100,11 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
 
         {/* Storage Condition Dropdown */}
         <div className="flex flex-col">
-          <label htmlFor="storage-condition" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+          <label htmlFor="ph-storage-condition" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
             Storage Condition <span className="text-red-500">*</span>
           </label>
           <select
-            id="storage-condition"
+            id="ph-storage-condition"
             value={storageCondition}
             aria-describedby={error ? "ph-error" : undefined}
             onChange={(e) => setStorageCondition(e.target.value)}
@@ -120,11 +120,11 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
 
         {/* Location Dropdown */}
         <div className="flex flex-col">
-          <label htmlFor="location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+          <label htmlFor="ph-location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
             Select Location <span className="text-red-500">*</span>
           </label>
           <select
-            id="location"
+            id="ph-location"
             value={locationName}
             aria-describedby={error ? "ph-error" : undefined}
             onChange={(e) => setLocationName(e.target.value)}
@@ -150,7 +150,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
               Transport Cost Preview ({locationName})
             </span>
             <p className="text-slate-600">
-              Estimated transport rate: ₹3.00/km per quintal (Min: ₹500). Total transport for {quantityQuintals}q across 25–65 km: <strong>₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 3 * 35)).toLocaleString('en-IN')} – ₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 3 * 65)).toLocaleString('en-IN')}</strong>.
+              Estimated transport rate: ₹5.00/km per quintal (Min: ₹500). Total transport for {quantityQuintals}q across 25–65 km: <strong>₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 5 * 35)).toLocaleString('en-IN')} – ₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 5 * 65)).toLocaleString('en-IN')}</strong>.
             </p>
           </div>
         )}

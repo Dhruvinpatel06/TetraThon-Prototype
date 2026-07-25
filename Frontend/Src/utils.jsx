@@ -39,3 +39,34 @@ export const getOptionSvg = (key) => {
       return null
   }
 }
+
+export const getStorageLabel = (key) => {
+  if (!key) return 'Unknown Storage'
+  return storageLabels[key] || key.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
+
+export const getAdvisoryIcon = (type) => {
+  switch (type) {
+    case 'irrigation':
+      return (
+        <svg className="w-5 h-5 text-blue-600" aria-label="Irrigation icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L5.6 15.12a2 2 0 00-1.144.12l-1.026.41a2 2 0 00-1.127 2.052l.228 1.826a2 2 0 001.986 1.752h14.864a2 2 0 001.986-1.752l.228-1.826a2 2 0 00-1.127-2.052l-1.026-.41z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 3v9" />
+        </svg>
+      )
+    case 'fertiliser':
+      return (
+        <svg className="w-5 h-5 text-emerald-600" aria-label="Fertiliser icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      )
+    case 'pest':
+      return (
+        <svg className="w-5 h-5 text-amber-600" aria-label="Pest alert icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      )
+    default:
+      return null
+  }
+}

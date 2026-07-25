@@ -180,23 +180,24 @@ def generate_advisories(
             active_conditions.add("waterlogged")
 
     # Map weather forecast conditions
-    if forecast_data:
+    if forecast_data and "forecast" in forecast_data:
+        forecast_days = forecast_data.get("forecast", [])
         # rain expected if any day in forecast has rain_chance >= 50
-        if any(day["rain_chance"] >= 50 for day in forecast_data["forecast"]):
+        if any(day.get("rain_chance", 0) >= 50 for day in forecast_days):
             active_conditions.add("rain_expected")
         # high humidity if any day has humidity >= 70
-        if any(day["humidity"] >= 70 for day in forecast_data["forecast"]):
+        if any(day.get("humidity", 0) >= 70 for day in forecast_days):
             active_conditions.add("high_humidity")
             active_conditions.add("humid")
         # cool/humid if temp low <= 20 and humidity >= 70
-        if any(day["temp_low"] <= 20 and day["humidity"] >= 70 for day in forecast_data["forecast"]):
+        if any(day.get("temp_low", 99) <= 20 and day.get("humidity", 0) >= 70 for day in forecast_days):
             active_conditions.add("cool_humid")
         # hot/dry if temp high >= 40 and humidity <= 50
-        if any(day["temp_high"] >= 40 and day["humidity"] <= 50 for day in forecast_data["forecast"]):
+        if any(day.get("temp_high", 0) >= 40 and day.get("humidity", 100) <= 50 for day in forecast_days):
             active_conditions.add("hot_dry")
             active_conditions.add("dry_soil")
         # warm night if temp low >= 25
-        if any(day["temp_low"] >= 25 for day in forecast_data["forecast"]):
+        if any(day.get("temp_low", 0) >= 25 for day in forecast_days):
             active_conditions.add("warm_night")
 
     # 3. Score and format IRRIGATION advisory
@@ -213,16 +214,17 @@ def generate_advisories(
     freq = ir_rule["interval_days"]
 
     rain_advice = ""
-    if forecast_data:
-        rainy_days_count = sum(1 for day in forecast_data["forecast"] if day["rain_chance"] >= 50)
+    if forecast_data and "forecast" in forecast_data:
+        forecast_list = forecast_data.get("forecast", [])
+        rainy_days_count = sum(1 for day in forecast_list if day.get("rain_chance", 0) >= 50)
         skip_window = ir_rule.get("skip_window_days", 0)
         skip_if_rain = ir_rule.get("skip_if_rain_expected", False)
         
         # Check if rain is expected in the skip window
         rain_in_skip_window = False
         if skip_if_rain and skip_window > 0:
-            for day in forecast_data["forecast"][:skip_window]:
-                if day["rain_chance"] >= 50:
+            for day in forecast_list[:skip_window]:
+                if day.get("rain_chance", 0) >= 50:
                     rain_in_skip_window = True
                     break
 
