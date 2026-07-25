@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from ..adapters.weather import get_forecast
 from ..adapters.market_prices import get_price_adapter_status
 
 router = APIRouter()

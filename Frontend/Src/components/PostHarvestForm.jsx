@@ -51,7 +51,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
       {/* Form Body */}
       <form onSubmit={handleSubmit} className="p-6 space-y-5">
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded text-sm font-medium animate-pulse">
+          <div id="ph-error" role="alert" className="bg-red-50 border-l-4 border-red-500 text-red-700 p-3 rounded text-sm font-medium animate-pulse">
             {error}
           </div>
         )}
@@ -64,6 +64,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
           <select
             id="crop"
             value={cropName}
+            aria-describedby={error ? "ph-error" : undefined}
             onChange={(e) => setCropName(e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -89,6 +90,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
             step="0.5"
             placeholder="e.g. 10.0"
             value={quantityQuintals}
+            aria-describedby={error ? "ph-error" : undefined}
             onChange={(e) => setQuantityQuintals(e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -104,6 +106,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
           <select
             id="storage-condition"
             value={storageCondition}
+            aria-describedby={error ? "ph-error" : undefined}
             onChange={(e) => setStorageCondition(e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -123,6 +126,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
           <select
             id="location"
             value={locationName}
+            aria-describedby={error ? "ph-error" : undefined}
             onChange={(e) => setLocationName(e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"

@@ -184,7 +184,7 @@ def main():
 
     print(f"Dataset verification complete: {valid_count} valid, {corrupt_count} corrupt.")
 
-    class_names_path = Path("Backend/models/class_names.json")
+    class_names_path = BASE_DIR / "Backend" / "models" / "class_names.json"
     if class_names_path.exists():
         with open(class_names_path) as f:
             names = json.load(f)

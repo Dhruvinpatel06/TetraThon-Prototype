@@ -67,6 +67,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
           <select
             id="location"
             value={locationName}
+            aria-describedby={error ? "advisory-error" : undefined}
             onChange={(e) => setLocationName(e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -88,6 +89,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
           <select
             id="crop"
             value={cropName}
+            aria-describedby={error ? "advisory-error" : undefined}
             onChange={(e) => setCropName(e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -110,6 +112,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
             type="date"
             id="sowing-date"
             value={sowingDate}
+            aria-describedby={error ? "advisory-error" : undefined}
             max={today}
             onChange={(e) => setSowingDate(e.target.value)}
             disabled={isSubmitting}
@@ -126,6 +129,7 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
           <select
             id="weather-obs"
             value={weatherObservation}
+            aria-describedby={error ? "advisory-error" : undefined}
             onChange={(e) => setWeatherObservation(e.target.value)}
             disabled={isSubmitting}
             className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"

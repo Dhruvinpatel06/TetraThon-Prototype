@@ -176,7 +176,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
       {/* Form Body */}
       <form onSubmit={handleSubmit} className="p-6 space-y-5">
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-3.5 rounded-xl text-sm font-medium animate-pulse">
+          <div id="unified-error" role="alert" className="bg-red-50 border-l-4 border-red-500 text-red-700 p-3.5 rounded-xl text-sm font-medium animate-pulse">
             {error}
           </div>
         )}
@@ -190,6 +190,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
             <select
               id="location"
               value={locationName}
+              aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setLocationName(e.target.value)}
               disabled={isSubmitting}
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -211,6 +212,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
             <select
               id="crop"
               value={cropName}
+              aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setCropName(e.target.value)}
               disabled={isSubmitting}
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -233,6 +235,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
               type="date"
               id="sowing-date"
               value={sowingDate}
+              aria-describedby={error ? "unified-error" : undefined}
               max={today}
               onChange={(e) => setSowingDate(e.target.value)}
               disabled={isSubmitting}
@@ -248,6 +251,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
             <select
               id="weather-obs"
               value={weatherObservation}
+              aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setWeatherObservation(e.target.value)}
               disabled={isSubmitting}
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -273,6 +277,7 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
               max="1000"
               placeholder="e.g. 10.0"
               value={quantityQuintals}
+              aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setQuantityQuintals(e.target.value)}
               disabled={isSubmitting}
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
@@ -287,10 +292,12 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
             <select
               id="storage-condition"
               value={storageCondition}
+              aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setStorageCondition(e.target.value)}
               disabled={isSubmitting}
               className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition duration-200"
             >
+              <option value="">-- Select storage type --</option>
               <option value="open">Open Yard</option>
               <option value="warehouse">Warehouse (Covered)</option>
               <option value="cold_storage">Cold Storage</option>
