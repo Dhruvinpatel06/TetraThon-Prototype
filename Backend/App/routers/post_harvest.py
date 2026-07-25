@@ -4,6 +4,8 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from .. import models, schemas
 from ..engine.decision import generate_recommendation
+from ..engine.spoilage import compute_spoilage
+from ..adapters.market_prices import load_prices, get_latest_price
 from ..limiter import limiter
 
 router = APIRouter()
@@ -81,7 +83,6 @@ def create_post_harvest_plan(payload: schemas.PostHarvestInput, db: Session = De
 @router.get("/price-history")
 @limiter.limit("30/minute")
 def get_price_history(request: Request, crop: str = "Cotton", location: str = "Ahmedabad"):
-    from ..adapters.market_prices import load_prices
     target_crop = crop.strip().title() if crop else "Cotton"
     market_names = [
         "Ahmedabad APMC", "Surat APMC", "Vadodara APMC", "Rajkot APMC", "Anand APMC"
@@ -122,10 +123,7 @@ def get_price_history(request: Request, crop: str = "Cotton", location: str = "A
 @router.get("/spoilage-curve")
 @limiter.limit("30/minute")
 def get_spoilage_curve(request: Request, crop: str = "Cotton", quantity: float = 10.0):
-    from ..engine.spoilage import compute_spoilage
-    from ..adapters.market_prices import get_latest_price
-    
-    target_crop = crop.strip().capitalize() if crop else "Cotton"
+    target_crop = crop.strip().title() if crop else "Cotton"
     qty = max(0.1, float(quantity))
     
     price_per_q = get_latest_price(target_crop, "Ahmedabad APMC")

@@ -53,14 +53,14 @@ def test_generate_advisories_all_crops(sample_advisory_input):
 
 def test_generate_advisories_future_sowing_date():
     future_date = (datetime.date.today() + datetime.timedelta(days=10)).isoformat()
-    advisories = generate_advisories("Anand", "Cotton", future_date, "normal")
+    advisories = generate_advisories("Anand", "Cotton", future_date, None)
     assert len(advisories) == 3
     for a in advisories:
         assert "future" in a["plain_text"].lower()
 
 def test_generate_advisories_invalid_inputs():
     with pytest.raises(ValueError, match="Invalid sowing date format"):
-        generate_advisories("Anand", "Cotton", "invalid-date", "normal")
+        generate_advisories("Anand", "Cotton", "invalid-date", None)
         
     with pytest.raises(ValueError, match="Rules not found"):
-        generate_advisories("Anand", "UnknownCrop", "2026-05-15", "normal")
+        generate_advisories("Anand", "UnknownCrop", "2026-05-15", None)

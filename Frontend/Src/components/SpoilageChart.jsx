@@ -2,49 +2,7 @@ import React from 'react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts'
 
 export default function SpoilageChart({ crop = 'Cotton', quantity = 10, selectedStorage = 'warehouse', realData = null }) {
-  // Base daily prices per quintal approx reference
-  const basePrices = {
-    Cotton: 6200,
-    Wheat: 2400,
-    Groundnut: 5800,
-    Tomato: 1800
-  }
-
-  const initialPrice = basePrices[crop] || 5000
-  const initialValue = initialPrice * (parseFloat(quantity) || 10)
-
-  const cropModifiers = {
-    Tomato: 2.0,
-    Groundnut: 0.7,
-    Cotton: 0.5,
-    Wheat: 0.8
-  }
-
-  const modifier = cropModifiers[crop] || 1.0
-
-  const storageConfigs = {
-    open: { baseRate: 0.015, maxDays: 60 },
-    warehouse: { baseRate: 0.006, maxDays: 150 },
-    cold_storage: { baseRate: 0.0015, maxDays: 600 }
-  }
-
-  // Use real backend data if provided; otherwise calculate 30 days curve data
-  const data = realData && Array.isArray(realData) && realData.length > 0 ? realData : Array.from({ length: 31 }, (_, day) => {
-    const calcVal = (type) => {
-      const cfg = storageConfigs[type]
-      if (day >= cfg.maxDays) return 0
-      const rate = Math.min(1.0, Math.max(0.0, cfg.baseRate * modifier))
-      const rem = initialValue * Math.pow(1.0 - rate, day)
-      return Math.round(rem)
-    }
-
-    return {
-      day: `Day ${day}`,
-      open: calcVal('open'),
-      warehouse: calcVal('warehouse'),
-      cold_storage: calcVal('cold_storage')
-    }
-  })
+  const data = realData && Array.isArray(realData) && realData.length > 0 ? realData : []
 
   return (
     <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
