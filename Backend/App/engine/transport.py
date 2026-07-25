@@ -27,6 +27,8 @@ def haversine(lat1: float, lng1: float, lat2: float, lng2: float) -> float:
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
     
     return R * c
+TRANSPORT_RATE_PER_KM_PER_QUINTAL = 5.0  # ₹/km/quintal
+MINIMUM_TRANSPORT_CHARGE = 500.0          # ₹ minimum charge
 
 def transport_cost(lat: float, lng: float, quantity: float) -> list[dict]:
     """
@@ -41,10 +43,10 @@ def transport_cost(lat: float, lng: float, quantity: float) -> list[dict]:
         dist = haversine(lat, lng, m["latitude"], m["longitude"])
         
         # Calculate raw transport cost
-        raw_cost = dist * 5.0 * quantity
+        raw_cost = dist * TRANSPORT_RATE_PER_KM_PER_QUINTAL * quantity
         
         # Apply minimum charge of ₹500
-        cost = max(500.0, raw_cost)
+        cost = max(MINIMUM_TRANSPORT_CHARGE, raw_cost)
         
         results.append({
             "market": m["name"],

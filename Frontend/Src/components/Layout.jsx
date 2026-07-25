@@ -1,7 +1,7 @@
 import React from 'react'
 import DataStatusIndicator from './DataStatusIndicator'
 
-export default function Layout({ children, currentView = 'home', onNavigate }) {
+export default function Layout({ children, currentView = 'home', onNavigate, health }) {
   const navItems = [
     { id: 'home', label: 'Home' },
     { id: 'form', label: 'Crop Advisory' },
@@ -66,7 +66,7 @@ export default function Layout({ children, currentView = 'home', onNavigate }) {
 
       {/* Footer */}
       <footer className="mt-16 flex flex-col items-center gap-3 text-center text-slate-400 text-xs font-semibold uppercase tracking-wider">
-        <DataStatusIndicator />
+        <DataStatusIndicator adapters={health?.adapters} />
         <div>Built for <strong>TetraTHON 2026</strong> — Precision AgriTech Track.</div>
       </footer>
     </div>

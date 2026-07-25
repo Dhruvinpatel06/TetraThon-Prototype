@@ -1,4 +1,13 @@
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+let API_BASE = import.meta.env.VITE_API_URL
+
+if (!API_BASE) {
+  if (import.meta.env.DEV) {
+    console.warn("VITE_API_URL is missing. Silently falling back to http://localhost:8000 in development mode.")
+    API_BASE = 'http://localhost:8000'
+  } else {
+    throw new Error("VITE_API_URL environment variable is required in production environment.")
+  }
+}
 
 async function get(path) {
   const res = await fetch(`${API_BASE}${path}`)

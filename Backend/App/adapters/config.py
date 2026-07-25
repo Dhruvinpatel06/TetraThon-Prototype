@@ -1,18 +1,10 @@
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Automatically load local .env file if present in project root
 env_path = Path(__file__).resolve().parent.parent.parent / ".env"
-if env_path.exists():
-    try:
-        with open(env_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith("#") and "=" in line:
-                    key, val = line.split("=", 1)
-                    os.environ.setdefault(key.strip(), val.strip().strip('"').strip("'"))
-    except Exception:
-        pass
+load_dotenv(dotenv_path=env_path)
 
 # OpenWeatherMap Configuration
 OPENWEATHER_API_KEY = os.getenv("OPENWEATHER_API_KEY", "")

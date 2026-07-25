@@ -1,7 +1,7 @@
 import React from 'react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts'
 
-export default function PriceTrendChart({ crop = 'Cotton', location = 'Ahmedabad' }) {
+export default function PriceTrendChart({ crop = 'Cotton', location = 'Ahmedabad', realData = null }) {
   // Base price ranges per quintal
   const basePrices = {
     Cotton: { Ahmedabad: 6200, Surat: 6350, Vadodara: 6150, Rajkot: 6400, Anand: 6250 },
@@ -12,8 +12,8 @@ export default function PriceTrendChart({ crop = 'Cotton', location = 'Ahmedabad
 
   const cropBases = basePrices[crop] || basePrices.Cotton
 
-  // Synthetic 90-day price trend generator
-  const data = Array.from({ length: 12 }, (_, idx) => {
+  // Use real backend data if provided; otherwise fallback to historical trend generator
+  const data = realData && Array.isArray(realData) && realData.length > 0 ? realData : Array.from({ length: 12 }, (_, idx) => {
     const dayOffset = (11 - idx) * 7
     const d = new Date()
     d.setDate(d.getDate() - dayOffset)

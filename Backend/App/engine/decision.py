@@ -2,6 +2,13 @@ from .transport import MARKETS, haversine, transport_cost
 from .spoilage import compute_spoilage
 from ..adapters.market_prices import load_prices, get_latest_price, get_future_price
 
+DEFAULT_STORE_DAYS = 14
+STORAGE_RATES = {
+    "warehouse": 2.0,      # ₹/quintal/day
+    "cold_storage": 5.0,   # ₹/quintal/day
+    "open": 0.0            # ₹/quintal/day
+}
+
 
 def find_closest_market(lat: float, lng: float) -> str:
     """
@@ -44,7 +51,7 @@ def generate_recommendation(crop: str, quantity: float, storage: str, lat: float
     # ------------------
     # Option 2: Store (14 days)
     # ------------------
-    store_days = 14
+    store_days = DEFAULT_STORE_DAYS
     future_price = get_future_price(crop, nearest_market_name, store_days)
     future_revenue = future_price * quantity
     
@@ -52,13 +59,9 @@ def generate_recommendation(crop: str, quantity: float, storage: str, lat: float
     spoilage_res = compute_spoilage(crop, storage, store_days, future_revenue)
     spoilage_loss = spoilage_res["total_loss"]
     
-    # Storage rates: warehouse ₹2/q/day, cold_storage ₹5/q/day, open/others ₹0/q/day
-    storage_rate = 0.0
+    # Storage rates lookup
     storage_lower = storage.strip().lower() if storage else ""
-    if storage_lower == "warehouse":
-        storage_rate = 2.0
-    elif storage_lower == "cold_storage":
-        storage_rate = 5.0
+    storage_rate = STORAGE_RATES.get(storage_lower, 0.0)
         
     storage_cost_val = store_days * storage_rate * quantity
     store_net = future_revenue - spoilage_loss - storage_cost_val

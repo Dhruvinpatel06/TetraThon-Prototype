@@ -1,5 +1,4 @@
 {
-  "_notes": "risk_level is default risk in that stage before weather is factored in. Chunk 2 should bump risk up if weather matches raises_risk_if.",
   "Cotton": [
     {"stage": "germination", "days_range": [0, 20], "pest_or_disease": "Damping off", "risk_level": "Low", "raises_risk_if": ["waterlogged", "high_humidity"]},
     {"stage": "vegetative", "days_range": [21, 70], "pest_or_disease": "Aphids / Jassids", "risk_level": "Medium", "raises_risk_if": ["hot_dry"]},

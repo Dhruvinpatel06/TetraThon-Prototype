@@ -1,7 +1,7 @@
 import React from 'react'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, CartesianGrid } from 'recharts'
 
-export default function SpoilageChart({ crop = 'Cotton', quantity = 10, selectedStorage = 'warehouse' }) {
+export default function SpoilageChart({ crop = 'Cotton', quantity = 10, selectedStorage = 'warehouse', realData = null }) {
   // Base daily prices per quintal approx reference
   const basePrices = {
     Cotton: 6200,
@@ -28,8 +28,8 @@ export default function SpoilageChart({ crop = 'Cotton', quantity = 10, selected
     cold_storage: { baseRate: 0.0015, maxDays: 600 }
   }
 
-  // Generate 30 days curve data
-  const data = Array.from({ length: 31 }, (_, day) => {
+  // Use real backend data if provided; otherwise calculate 30 days curve data
+  const data = realData && Array.isArray(realData) && realData.length > 0 ? realData : Array.from({ length: 31 }, (_, day) => {
     const calcVal = (type) => {
       const cfg = storageConfigs[type]
       if (day >= cfg.maxDays) return 0

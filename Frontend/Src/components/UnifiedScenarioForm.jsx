@@ -1,41 +1,19 @@
 import { useState } from 'react'
 import { api } from '../api'
+import { useLeafUpload } from '../useLeafUpload'
 
 export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess, onCancel }) {
-  const [locationName, setLocationName] = useState('Ahmedabad')
-  const [cropName, setCropName] = useState('Cotton')
-  
-  // Default sowing date to 45 days ago
-  const defaultSowingDate = new Date(Date.now() - 45 * 86400000).toISOString().split('T')[0]
-  const [sowingDate, setSowingDate] = useState(defaultSowingDate)
+  const [locationName, setLocationName] = useState('')
+  const [cropName, setCropName] = useState('')
+  const [sowingDate, setSowingDate] = useState('')
   const [weatherObservation, setWeatherObservation] = useState('')
-  const [quantityQuintals, setQuantityQuintals] = useState('10.0')
-  const [storageCondition, setStorageCondition] = useState('warehouse')
+  const [quantityQuintals, setQuantityQuintals] = useState('')
+  const [storageCondition, setStorageCondition] = useState('')
 
-  const [leafPhoto, setLeafPhoto] = useState(null)
-  const [leafResult, setLeafResult] = useState(null)
-  const [isClassifying, setIsClassifying] = useState(false)
+  const { leafResult, isClassifying, handleLeafUpload } = useLeafUpload()
 
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState(null)
-
-  const today = new Date().toISOString().split('T')[0]
-
-  const handleLeafUpload = async (e) => {
-    const file = e.target.files[0]
-    if (!file) return
-    setLeafPhoto(file)
-    setIsClassifying(true)
-    setLeafResult(null)
-    try {
-      const result = await api.postLeafClassify(file)
-      setLeafResult(result)
-    } catch (err) {
-      setLeafResult({ error: err.message || 'Classification failed' })
-    } finally {
-      setIsClassifying(false)
-    }
-  }
 
   const applyPreset = (preset) => {
     setError(null)

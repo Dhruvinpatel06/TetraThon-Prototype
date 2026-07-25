@@ -25,10 +25,15 @@ STAGE_WATER_DEPTH = {
 }
 
 
+# Rules cache at module level
+_RULES_CACHE = {}
+
 def load_rules(filename: str) -> dict:
-    filepath = RULES_DIR / filename
-    with open(filepath, "r") as f:
-        return json.load(f)
+    if filename not in _RULES_CACHE:
+        filepath = RULES_DIR / filename
+        with open(filepath, "r") as f:
+            _RULES_CACHE[filename] = json.load(f)
+    return _RULES_CACHE[filename]
 
 
 def get_crop_rules(rules_dict: dict, crop_name: str) -> list | None:

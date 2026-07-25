@@ -2,10 +2,10 @@ import os
 import json
 import struct
 from pathlib import Path
-
-KERAS_MODEL_PATH = Path("Backend/models/leaf_classifier.keras")
-TFLITE_MODEL_PATH = Path("Backend/models/leaf_classifier.tflite")
-CLASS_NAMES_PATH = Path("Backend/models/class_names.json")
+BASE_DIR = Path(__file__).resolve().parent.parent
+KERAS_MODEL_PATH = BASE_DIR / "Backend" / "models" / "leaf_classifier.keras"
+TFLITE_MODEL_PATH = BASE_DIR / "Backend" / "models" / "leaf_classifier.tflite"
+CLASS_NAMES_PATH = BASE_DIR / "Backend" / "models" / "class_names.json"
 
 def convert_to_tflite():
     print("Starting TFLite model conversion & quantization...")
