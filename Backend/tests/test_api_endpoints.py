@@ -66,3 +66,35 @@ def test_api_spoilage_curve_endpoint():
     data = response.json()
     assert data["crop"] == "Cotton"
     assert "curve" in data
+
+def test_api_e2e_unified_flow():
+    # 1. Fetch available locations and crops
+    loc_res = client.get("/api/locations")
+    crop_res = client.get("/api/crops")
+    assert loc_res.status_code == 200 and crop_res.status_code == 200
+    loc_name = loc_res.json()[0]["name"]
+    crop_name = crop_res.json()[0]["name"]
+
+    # 2. Submit Advisory Request
+    adv_payload = {
+        "location_name": loc_name,
+        "crop_name": crop_name,
+        "sowing_date": "2026-05-01",
+        "weather_observation": "hot_and_dry"
+    }
+    adv_res = client.post("/api/advisory", json=adv_payload)
+    assert adv_res.status_code == 200
+    adv_data = adv_res.json()
+    assert len(adv_data["advisories"]) == 3
+
+    # 3. Submit Post-Harvest Decision Request
+    ph_payload = {
+        "crop_name": crop_name,
+        "quantity_quintals": 15.0,
+        "storage_condition": "warehouse",
+        "location_name": loc_name
+    }
+    ph_res = client.post("/api/post-harvest", json=ph_payload)
+    assert ph_res.status_code == 200
+    ph_data = ph_res.json()
+    assert ph_data["recommendation"] in ["sell_now", "store", "transport", "hold_consult"]
