@@ -120,8 +120,11 @@ def load_prices(crop: str, market: str) -> list[dict]:
         with open(CSV_PATH, mode="r", encoding="utf-8") as f:
             reader = csv.DictReader(f)
             for row in reader:
-                key = (row["crop"].strip().capitalize(), row["market"].strip())
-                price_val = float(row["price_per_quintal"])
+                try:
+                    price_val = float(row["price_per_quintal"])
+                except (ValueError, TypeError, KeyError):
+                    continue
+                key = (row["crop"].strip().title(), row["market"].strip())
                 if key not in _csv_prices_cache:
                     _csv_prices_cache[key] = []
                 _csv_prices_cache[key].append({
@@ -135,7 +138,8 @@ def load_prices(crop: str, market: str) -> list[dict]:
     return _csv_prices_cache.get(cache_key, [])
 
 
-# Offset in historical price array representing the baseline evaluation date (14 days before end of dataset)
+# Offset in 0-indexed historical price array representing the baseline evaluation date.
+# Setting to 15 allows evaluating up to 14 days into the future within an N-element dataset (N - 15 + 14 = N - 1).
 EVALUATION_SERIES_OFFSET = 15
 
 

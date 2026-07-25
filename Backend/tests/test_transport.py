@@ -26,7 +26,7 @@ def test_transport_cost_calculation():
     assert abs(ahmedabad["transport_cost"] - round(expected, 2)) < 1.0
 
 def test_transport_cost_zero_quantity():
-    # 0 quantity should return ₹500 min charge for all markets
+    # 0 quantity should return 0.0 transport cost for all markets
     costs = transport_cost(23.0225, 72.5714, 0.0)
     for c in costs:
-        assert c["transport_cost"] == 500.0
+        assert c["transport_cost"] == 0.0

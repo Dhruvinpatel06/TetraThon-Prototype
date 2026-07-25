@@ -27,7 +27,7 @@ class AdvisoryInput(BaseModel):
     location_name: str
     crop_name: str
     sowing_date: str  # ISO format YYYY-MM-DD
-    weather_observation: str | None = None  # "hot_and_dry", "humid_cloudy", "light_rain", "heavy_rain", null
+    weather_observation: Literal["hot_dry", "hot_and_dry", "humid_cloudy", "light_rain", "heavy_rain"] | None = None
 
 
 class AdvisoryItem(BaseModel):
@@ -60,7 +60,7 @@ class OptionDetail(BaseModel):
 
 
 class PostHarvestOutput(BaseModel):
-    recommendation: Literal["sell_now", "store", "transport"]
+    recommendation: Literal["sell_now", "store", "transport", "hold_consult"]
     option_label: str
     expected_return: float
     expected_return_per_quintal: float

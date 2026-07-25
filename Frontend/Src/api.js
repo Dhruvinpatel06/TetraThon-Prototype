@@ -11,7 +11,10 @@ if (!API_BASE) {
 
 async function get(path) {
   const res = await fetch(`${API_BASE}${path}`)
-  if (!res.ok) throw new Error(`${path} failed: ${res.status}`)
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.detail || `${path} failed: ${res.status}`)
+  }
   return res.json()
 }
 

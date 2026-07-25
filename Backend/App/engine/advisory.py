@@ -213,16 +213,17 @@ def generate_advisories(
     freq = ir_rule["interval_days"]
 
     rain_advice = ""
-    if forecast_data:
-        rainy_days_count = sum(1 for day in forecast_data["forecast"] if day["rain_chance"] >= 50)
+    if forecast_data and "forecast" in forecast_data:
+        forecast_list = forecast_data.get("forecast", [])
+        rainy_days_count = sum(1 for day in forecast_list if day.get("rain_chance", 0) >= 50)
         skip_window = ir_rule.get("skip_window_days", 0)
         skip_if_rain = ir_rule.get("skip_if_rain_expected", False)
         
         # Check if rain is expected in the skip window
         rain_in_skip_window = False
         if skip_if_rain and skip_window > 0:
-            for day in forecast_data["forecast"][:skip_window]:
-                if day["rain_chance"] >= 50:
+            for day in forecast_list[:skip_window]:
+                if day.get("rain_chance", 0) >= 50:
                     rain_in_skip_window = True
                     break
 

@@ -80,26 +80,38 @@ def create_post_harvest_plan(payload: schemas.PostHarvestInput, db: Session = De
 @router.get("/price-history")
 def get_price_history(crop: str = "Cotton", location: str = "Ahmedabad"):
     from ..adapters.market_prices import load_prices
-    target_crop = crop.strip().capitalize() if crop else "Cotton"
+    target_crop = crop.strip().title() if crop else "Cotton"
     market_names = [
         "Ahmedabad APMC", "Surat APMC", "Vadodara APMC", "Rajkot APMC", "Anand APMC"
     ]
     
     market_histories = {m: load_prices(target_crop, m) for m in market_names}
-    sample_len = min(len(h) for h in market_histories.values() if h) if any(market_histories.values()) else 0
+    non_empty_lengths = [len(h) for h in market_histories.values() if h]
+    if not non_empty_lengths:
+        return {"crop": target_crop, "location": location, "history": []}
+        
+    sample_len = min(non_empty_lengths)
     if sample_len == 0:
-        return {"crop": target_crop, "history": []}
+        return {"crop": target_crop, "location": location, "history": []}
     
     step = max(1, sample_len // 12)
     indices = list(range(0, sample_len, step))[-12:]
     
     formatted_trend = []
     for idx in indices:
-        date_label = market_histories["Ahmedabad APMC"][idx]["date"] if market_histories["Ahmedabad APMC"] else f"Pt {idx}"
+        # Find first non-empty market to extract date label
+        date_label = f"Pt {idx}"
+        for m in market_names:
+            history = market_histories.get(m, [])
+            if history and idx < len(history):
+                date_label = history[idx].get("date", f"Pt {idx}")
+                break
+                
         point = {"date": date_label}
         for m in market_names:
-            if market_histories[m] and idx < len(market_histories[m]):
-                point[m] = market_histories[m][idx]["price"]
+            history = market_histories.get(m, [])
+            if history and idx < len(history):
+                point[m] = history[idx].get("price", 0.0)
         formatted_trend.append(point)
         
     return {"crop": target_crop, "location": location, "history": formatted_trend}
