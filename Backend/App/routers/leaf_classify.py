@@ -1,7 +1,8 @@
 import logging
 import sys
 from pathlib import Path
-from fastapi import APIRouter, UploadFile, File, HTTPException
+from fastapi import APIRouter, UploadFile, File, HTTPException, Request
+from ..limiter import limiter
 
 # Ensure Backend root directory is in sys.path for models import
 backend_dir = Path(__file__).resolve().parent.parent.parent
@@ -14,11 +15,16 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
+MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 @router.post("/leaf-classify")
-async def leaf_classify(file: UploadFile = File(...)):
+@limiter.limit("10/minute")
+async def leaf_classify(request: Request, file: UploadFile = File(...)):
     if not file or not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
+
+    if file.size and file.size > MAX_FILE_SIZE:
+        raise HTTPException(status_code=413, detail="File size exceeds 10MB limit")
 
     file_ext = "." + file.filename.split(".")[-1].lower() if "." in file.filename else ""
     is_valid_type = (file.content_type and file.content_type.startswith("image/")) or (file_ext in ALLOWED_EXTENSIONS)
@@ -28,6 +34,9 @@ async def leaf_classify(file: UploadFile = File(...)):
 
     try:
         image_bytes = await file.read()
+        if len(image_bytes) > MAX_FILE_SIZE:
+            raise HTTPException(status_code=413, detail="File size exceeds 10MB limit")
+
         if len(image_bytes) == 0:
             raise HTTPException(status_code=400, detail="Uploaded file is empty")
 
