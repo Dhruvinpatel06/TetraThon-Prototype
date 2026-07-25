@@ -1,15 +1,11 @@
 import logging
-import sys
-from pathlib import Path
 from fastapi import APIRouter, UploadFile, File, HTTPException, Request
 from ..limiter import limiter
 
-# Ensure Backend root directory is in sys.path for models import
-backend_dir = Path(__file__).resolve().parent.parent.parent
-if str(backend_dir) not in sys.path:
-    sys.path.insert(0, str(backend_dir))
-
-from models.leaf_classifier import classify
+try:
+    from ..models.leaf_classifier import classify
+except ImportError:
+    from models.leaf_classifier import classify
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

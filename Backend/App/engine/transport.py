@@ -35,8 +35,16 @@ def transport_cost(lat: float, lng: float, quantity: float) -> list[dict]:
     Computes transport cost to all 5 markets from a given coordinate.
     Cost per km per quintal is ₹5, with a minimum charge of ₹500.
     """
-    # Normalize input quantity to be non-negative
-    quantity = max(0.0, quantity)
+    # Normalize input quantity
+    if quantity <= 0.0:
+        return [
+            {
+                "market": m["name"],
+                "distance_km": round(haversine(lat, lng, m["latitude"], m["longitude"]), 2),
+                "transport_cost": 0.0
+            }
+            for m in MARKETS
+        ]
     
     results = []
     for m in MARKETS:

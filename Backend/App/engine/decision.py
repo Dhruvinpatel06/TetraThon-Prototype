@@ -27,7 +27,7 @@ def generate_recommendation(crop: str, quantity: float, storage: str, lat: float
     """
     Compares 3 options (Sell Now, Store, Transport) and returns the optimal recommendation.
     """
-    crop = crop.strip().capitalize() if crop else ""
+    crop = crop.strip().title() if crop else ""
     quantity = max(0.0, quantity)
     
     # 1. Find nearest market
@@ -89,9 +89,14 @@ def generate_recommendation(crop: str, quantity: float, storage: str, lat: float
             
     # ------------------
     # Decision Engine Comparison
-    # Prefer Sell Now in case of ties: Sell Now >= Store >= Transport
+    # Guard if all options yield a net loss
     # ------------------
-    if sell_now_net >= store_net and sell_now_net >= best_transport_net:
+    if sell_now_net < 0 and store_net < 0 and best_transport_net < 0:
+        rec_type = "hold_consult"
+        option_label = "Hold / Consult Advisor"
+        expected_return = max(sell_now_net, store_net, best_transport_net)
+        reason = f"All post-harvest options yield a net loss under current market prices and transport costs. We recommend consulting a local agricultural officer or holding produce if viable."
+    elif sell_now_net >= store_net and sell_now_net >= best_transport_net:
         rec_type = "sell_now"
         option_label = "Sell Now"
         expected_return = sell_now_net
@@ -107,7 +112,9 @@ def generate_recommendation(crop: str, quantity: float, storage: str, lat: float
     expected_return_per_q = (expected_return / quantity) if quantity > 0 else 0.0
     
     # Reason text construction
-    if rec_type == "sell_now":
+    if rec_type == "hold_consult":
+        pass  # already set above
+    elif rec_type == "sell_now":
         reason = f"Selling locally at {nearest_market_name} yields the highest expected net return of ₹{round(sell_now_net, 2):,}."
     elif rec_type == "store":
         diff = store_net - sell_now_net

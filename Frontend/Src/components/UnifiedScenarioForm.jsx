@@ -185,11 +185,11 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           {/* Location Dropdown */}
           <div className="flex flex-col">
-            <label htmlFor="location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+            <label htmlFor="unified-location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
               Select Location <span className="text-red-500">*</span>
             </label>
             <select
-              id="location"
+              id="unified-location"
               value={locationName}
               aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setLocationName(e.target.value)}
@@ -207,11 +207,11 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
 
           {/* Crop Dropdown */}
           <div className="flex flex-col">
-            <label htmlFor="crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+            <label htmlFor="unified-crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
               Select Crop <span className="text-red-500">*</span>
             </label>
             <select
-              id="crop"
+              id="unified-crop"
               value={cropName}
               aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setCropName(e.target.value)}
@@ -229,12 +229,12 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
 
           {/* Sowing Date */}
           <div className="flex flex-col">
-            <label htmlFor="sowing-date" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+            <label htmlFor="unified-sowing-date" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
               Sowing Date <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
-              id="sowing-date"
+              id="unified-sowing-date"
               value={sowingDate}
               aria-describedby={error ? "unified-error" : undefined}
               max={today}
@@ -246,11 +246,11 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
 
           {/* Weather Observation */}
           <div className="flex flex-col">
-            <label htmlFor="weather-obs" className="text-sm font-semibold text-slate-700 mb-1.5">
+            <label htmlFor="unified-weather-obs" className="text-sm font-semibold text-slate-700 mb-1.5">
               Weather Observation <span className="text-slate-400 font-normal">(Optional)</span>
             </label>
             <select
-              id="weather-obs"
+              id="unified-weather-obs"
               value={weatherObservation}
               aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setWeatherObservation(e.target.value)}
@@ -267,12 +267,12 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
 
           {/* Quantity (Quintals) */}
           <div className="flex flex-col">
-            <label htmlFor="quantity" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+            <label htmlFor="unified-quantity" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
               Produce Quantity (Quintals) <span className="text-red-500">*</span>
             </label>
             <input
               type="number"
-              id="quantity"
+              id="unified-quantity"
               min="0.5"
               step="0.5"
               max="1000"
@@ -287,11 +287,11 @@ export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess,
 
           {/* Storage Condition */}
           <div className="flex flex-col">
-            <label htmlFor="storage-condition" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+            <label htmlFor="unified-storage-condition" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
               Storage Condition <span className="text-red-500">*</span>
             </label>
             <select
-              id="storage-condition"
+              id="unified-storage-condition"
               value={storageCondition}
               aria-describedby={error ? "unified-error" : undefined}
               onChange={(e) => setStorageCondition(e.target.value)}

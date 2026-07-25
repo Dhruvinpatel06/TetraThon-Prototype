@@ -14,7 +14,7 @@ describe('API Client', () => {
     })
 
     const res = await api.health()
-    expect(fetch).toHaveBeenCalledWith('http://localhost:8000/api/health')
+    expect(fetch).toHaveBeenCalledWith('http://localhost:8000/api/health', expect.objectContaining({ signal: expect.any(Object) }))
     expect(res).toEqual(mockHealth)
   })
 
@@ -26,7 +26,7 @@ describe('API Client', () => {
     })
 
     const res = await api.locations()
-    expect(fetch).toHaveBeenCalledWith('http://localhost:8000/api/locations')
+    expect(fetch).toHaveBeenCalledWith('http://localhost:8000/api/locations', expect.objectContaining({ signal: expect.any(Object) }))
     expect(res).toEqual(mockLocs)
   })
 

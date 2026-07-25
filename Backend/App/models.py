@@ -30,7 +30,6 @@ class FarmerSession(Base):
     crop_id = Column(Integer, ForeignKey("crops.id"), nullable=True)
     sowing_date = Column(DateTime, nullable=True)
     weather_observation = Column(String, nullable=True)
-    photo_path = Column(String, nullable=True)  # Reserved for storing uploaded leaf image file path in future iterations
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
 

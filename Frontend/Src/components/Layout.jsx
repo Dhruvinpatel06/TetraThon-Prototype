@@ -15,9 +15,10 @@ export default function Layout({ children, currentView = 'home', onNavigate, hea
       <header className="w-full bg-slate-900 text-white shadow-md border-b border-slate-800 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3">
           {/* Brand Logo & Title */}
-          <div 
+          <button 
+            type="button"
             onClick={() => onNavigate && onNavigate('home')} 
-            className="flex items-center gap-2.5 cursor-pointer hover:opacity-90 transition"
+            className="flex items-center gap-2.5 text-left cursor-pointer hover:opacity-90 transition focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-xl"
           >
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 text-lg font-black shadow-lg">
               A
@@ -33,11 +34,11 @@ export default function Layout({ children, currentView = 'home', onNavigate, hea
                 Precision Crop Advisory & Post-Harvest Loss Engine
               </p>
             </div>
-          </div>
+          </button>
 
           {/* Navigation Links */}
           {onNavigate && (
-            <nav className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/50 text-xs">
+            <nav aria-label="Main navigation" className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/50 text-xs">
               {navItems.map((item) => {
                 const isActive = currentView === item.id || (item.id === 'dashboard-form' && currentView === 'dashboard')
                 return (

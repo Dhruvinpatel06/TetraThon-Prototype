@@ -61,11 +61,11 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
 
         {/* Location Dropdown */}
         <div className="flex flex-col">
-          <label htmlFor="location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+          <label htmlFor="advisory-location" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
             Select Location <span className="text-red-500">*</span>
           </label>
           <select
-            id="location"
+            id="advisory-location"
             value={locationName}
             aria-describedby={error ? "advisory-error" : undefined}
             onChange={(e) => setLocationName(e.target.value)}
@@ -83,11 +83,11 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
 
         {/* Crop Dropdown */}
         <div className="flex flex-col">
-          <label htmlFor="crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+          <label htmlFor="advisory-crop" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
             Select Crop <span className="text-red-500">*</span>
           </label>
           <select
-            id="crop"
+            id="advisory-crop"
             value={cropName}
             aria-describedby={error ? "advisory-error" : undefined}
             onChange={(e) => setCropName(e.target.value)}
@@ -105,12 +105,12 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
 
         {/* Sowing Date Picker */}
         <div className="flex flex-col">
-          <label htmlFor="sowing-date" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
+          <label htmlFor="advisory-sowing-date" className="text-sm font-semibold text-slate-700 mb-1.5 flex items-center gap-1">
             Sowing Date <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
-            id="sowing-date"
+            id="advisory-sowing-date"
             value={sowingDate}
             aria-describedby={error ? "advisory-error" : undefined}
             max={today}
@@ -123,11 +123,11 @@ export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCanc
 
         {/* Weather Observation Dropdown */}
         <div className="flex flex-col">
-          <label htmlFor="weather-obs" className="text-sm font-semibold text-slate-700 mb-1.5">
+          <label htmlFor="advisory-weather-obs" className="text-sm font-semibold text-slate-700 mb-1.5">
             Field Weather Observation <span className="text-slate-400 font-normal">(Optional)</span>
           </label>
           <select
-            id="weather-obs"
+            id="advisory-weather-obs"
             value={weatherObservation}
             aria-describedby={error ? "advisory-error" : undefined}
             onChange={(e) => setWeatherObservation(e.target.value)}

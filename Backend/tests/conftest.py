@@ -33,5 +33,5 @@ def sample_advisory_input():
         "location_name": "Anand",
         "crop_name": "Cotton",
         "sowing_date_str": (datetime.date.today() - datetime.timedelta(days=45)).isoformat(),
-        "weather_observation": "hot_dry"
+        "weather_observation": "hot_and_dry"
     }

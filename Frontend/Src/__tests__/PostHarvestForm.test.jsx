@@ -1,15 +1,26 @@
-import { describe, it, expect } from 'vitest'
+import '@testing-library/jest-dom'
+import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import PostHarvestForm from '../components/PostHarvestForm'
 
-describe('PostHarvestForm Component Spec', () => {
-  it('defines valid post harvest payload properties', () => {
-    const payload = {
-      crop_name: 'Cotton',
-      quantity_quintals: 10.0,
-      storage_condition: 'warehouse',
-      location_name: 'Ahmedabad'
-    }
+describe('PostHarvestForm Component', () => {
+  const mockLocations = [{ id: 1, name: 'Anand', state: 'Gujarat' }]
+  const mockCrops = [{ id: 1, name: 'Cotton', category: 'cash_crop' }]
 
-    expect(payload.quantity_quintals).toBeGreaterThan(0)
-    expect(payload.storage_condition).toBe('warehouse')
+  it('renders form fields and storage options correctly', () => {
+    render(
+      <PostHarvestForm
+        locations={mockLocations}
+        crops={mockCrops}
+        onSubmitSuccess={vi.fn()}
+        onCancel={vi.fn()}
+      />
+    )
+
+    expect(screen.getByLabelText(/Select Crop/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Quantity \(Quintals\)/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Storage Condition/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Select Location/i)).toBeInTheDocument()
+    expect(screen.getByText('Warehouse (Covered)')).toBeInTheDocument()
   })
 })

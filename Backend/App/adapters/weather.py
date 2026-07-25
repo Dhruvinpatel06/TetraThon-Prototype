@@ -52,8 +52,20 @@ LOCATION_COORDS = {
 }
 
 
+import time
+
+_WEATHER_CACHE = {}  # {location: (timestamp, data)}
+WEATHER_CACHE_TTL = 600  # 10 minutes in seconds
+
+
 def _fetch_live_forecast(location: str) -> dict | None:
     """Attempt to fetch 7-day forecast from OpenWeatherMap. Returns None on failure."""
+    now = time.time()
+    if location in _WEATHER_CACHE:
+        ts, cached_data = _WEATHER_CACHE[location]
+        if now - ts < WEATHER_CACHE_TTL:
+            return cached_data
+
     if not OPENWEATHER_API_KEY:
         logger.warning(f"Weather: No OPENWEATHER_API_KEY set, skipping live fetch for {location}")
         return None
@@ -76,7 +88,9 @@ def _fetch_live_forecast(location: str) -> dict | None:
             
             forecast = _parse_owm_forecast(data)
             if forecast:
-                return {"location": location, "forecast": forecast, "source": "live"}
+                result = {"location": location, "forecast": forecast, "source": "live"}
+                _WEATHER_CACHE[location] = (now, result)
+                return result
     except Exception as exc:
         logger.warning(f"Weather API call failed for {location}: {exc}. Falling back to mock data.")
         return None

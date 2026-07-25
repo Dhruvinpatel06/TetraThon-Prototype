@@ -65,16 +65,19 @@ def create_advisory(payload: schemas.AdvisoryInput, db: Session = Depends(get_db
         )
 
     # 3. Save a FarmerSession record with input details
-    session = models.FarmerSession(
-        location_id=location.id,
-        crop_id=crop.id,
-        sowing_date=sowing_date_dt,
-        weather_observation=payload.weather_observation,
-        photo_path=None  # Coming soon
-    )
-    db.add(session)
-    db.commit()
-    db.refresh(session)
+    try:
+        session = models.FarmerSession(
+            location_id=location.id,
+            crop_id=crop.id,
+            sowing_date=sowing_date_dt,
+            weather_observation=payload.weather_observation
+        )
+        db.add(session)
+        db.commit()
+        db.refresh(session)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Database session save failed: {str(e)}")
 
     # 4. Return { advisories: [...], session_id: N }
     return {

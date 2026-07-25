@@ -9,17 +9,37 @@ if (!API_BASE) {
   }
 }
 
-async function get(path) {
-  const res = await fetch(`${API_BASE}${path}`)
-  if (!res.ok) throw new Error(`${path} failed: ${res.status}`)
+async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
+  const controller = new AbortController()
+  const id = setTimeout(() => controller.abort(), timeoutMs)
+  try {
+    const res = await fetch(url, { ...options, signal: controller.signal })
+    return res
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      throw new Error(`Request timed out after ${timeoutMs / 1000}s`)
+    }
+    throw err
+  } finally {
+    clearTimeout(id)
+  }
+}
+
+async function get(path, options = {}) {
+  const res = await fetchWithTimeout(`${API_BASE}${path}`, options)
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}))
+    throw new Error(errorData.detail || `${path} failed: ${res.status}`)
+  }
   return res.json()
 }
 
-async function post(path, body) {
-  const res = await fetch(`${API_BASE}${path}`, {
+async function post(path, body, options = {}) {
+  const res = await fetchWithTimeout(`${API_BASE}${path}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
+    ...options
   })
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}))
@@ -29,18 +49,18 @@ async function post(path, body) {
 }
 
 export const api = {
-  health: () => get('/api/health'),
-  locations: () => get('/api/locations'),
-  crops: () => get('/api/crops'),
-  postAdvisory: (data) => post('/api/advisory', data),
-  getRules: (cropName) => get(`/api/rules?crop_name=${encodeURIComponent(cropName)}`),
-  postPostHarvest: (data) => post('/api/post-harvest', data),
-  priceHistory: (crop, location) => get(`/api/price-history?crop=${encodeURIComponent(crop || '')}&location=${encodeURIComponent(location || '')}`),
-  spoilageCurve: (crop, quantity) => get(`/api/spoilage-curve?crop=${encodeURIComponent(crop || '')}&quantity=${encodeURIComponent(quantity || 10)}`),
+  health: (opts) => get('/api/health', opts),
+  locations: (opts) => get('/api/locations', opts),
+  crops: (opts) => get('/api/crops', opts),
+  postAdvisory: (data, opts) => post('/api/advisory', data, opts),
+  getRules: (cropName, opts) => get(`/api/rules?crop_name=${encodeURIComponent(cropName)}`, opts),
+  postPostHarvest: (data, opts) => post('/api/post-harvest', data, opts),
+  priceHistory: (crop, location, opts) => get(`/api/price-history?crop=${encodeURIComponent(crop || '')}&location=${encodeURIComponent(location || '')}`, opts),
+  spoilageCurve: (crop, quantity, opts) => get(`/api/spoilage-curve?crop=${encodeURIComponent(crop || '')}&quantity=${encodeURIComponent(quantity || 10)}`, opts),
   postLeafClassify: async (file) => {
     const formData = new FormData()
     formData.append('file', file)
-    const res = await fetch(`${API_BASE}/api/leaf-classify`, {
+    const res = await fetchWithTimeout(`${API_BASE}/api/leaf-classify`, {
       method: 'POST',
       body: formData,
     })

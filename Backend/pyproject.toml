@@ -21,3 +21,11 @@ dependencies = [
     "slowapi>=0.1.9",
     "python-dotenv>=1.0.0"
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--ignore=tests/milestones"
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::UserWarning",
+]
