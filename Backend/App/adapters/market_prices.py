@@ -45,18 +45,10 @@ def _fetch_live_prices(crop: str, market: str) -> list[dict] | None:
         return None
     
     try:
-        import ssl
-        ssl_ctx = ssl.create_default_context()
-        try:
-            ssl_ctx.minimum_version = ssl.TLSVersion.TLS1_2
-            ssl_ctx.maximum_version = ssl.TLSVersion.TLS1_2
-        except Exception:
-            pass
-
         headers = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
         }
-        with httpx.Client(timeout=AGMARKNET_TIMEOUT, headers=headers, verify=ssl_ctx) as client:
+        with httpx.Client(timeout=AGMARKNET_TIMEOUT, headers=headers) as client:
             resp = client.get(AGMARKNET_BASE_URL, params={
                 "api-key": AGMARKNET_API_KEY,
                 "format": "json",
@@ -69,7 +61,10 @@ def _fetch_live_prices(crop: str, market: str) -> list[dict] | None:
             
             records = []
             for record in data.get("records", []):
-                price_val = float(record.get("modal_price", 0))
+                try:
+                    price_val = float(record.get("modal_price", 0))
+                except (ValueError, TypeError):
+                    continue
                 records.append({
                     "date": record.get("date", ""),
                     "price": price_val,
@@ -93,7 +88,7 @@ def load_prices(crop: str, market: str) -> list[dict]:
     """
     Returns price series for crop at market. Tries live API first, falls back to CSV.
     """
-    crop = crop.strip().capitalize() if crop else ""
+    crop = crop.strip().title() if crop else ""
     market = market.strip() if market else ""
     
     cache_key = (crop, market)
