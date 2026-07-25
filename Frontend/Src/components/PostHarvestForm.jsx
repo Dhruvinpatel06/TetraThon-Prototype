@@ -136,6 +136,21 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
           </select>
         </div>
 
+        {/* Transport Cost Preview Section */}
+        {locationName && quantityQuintals && parseFloat(quantityQuintals) > 0 && (
+          <div className="bg-indigo-50/70 border border-indigo-100 p-3.5 rounded-xl text-xs text-indigo-900 flex flex-col gap-1">
+            <span className="font-semibold text-indigo-950 flex items-center gap-1.5">
+              <svg className="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0zM13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1a1 1 0 001-1V9a1 1 0 00-1-1h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 00-.293.707V16m5 0h1" />
+              </svg>
+              Transport Cost Preview ({locationName})
+            </span>
+            <p className="text-slate-600">
+              Estimated transport rate: ₹3.00/km per quintal (Min: ₹500). Total transport for {quantityQuintals}q across 25–65 km: <strong>₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 3 * 35)).toLocaleString('en-IN')} – ₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 3 * 65)).toLocaleString('en-IN')}</strong>.
+            </p>
+          </div>
+        )}
+
         {/* Action Buttons */}
         <div className="flex gap-3 pt-2">
           <button
@@ -153,7 +168,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
           >
             {isSubmitting ? (
               <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" aria-hidden="true">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>

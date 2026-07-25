@@ -16,6 +16,7 @@ export default function App() {
   const [locations, setLocations] = useState([])
   const [crops, setCrops] = useState([])
   const [error, setError] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
   
   // Navigation view state: 'home' | 'form' | 'results' | 'ph-form' | 'ph-results' | 'dashboard-form' | 'dashboard'
   const [view, setView] = useState('home')
@@ -31,7 +32,9 @@ export default function App() {
   // Unified Dashboard States
   const [unifiedData, setUnifiedData] = useState(null)
 
-  useEffect(() => {
+  const loadInitialData = () => {
+    setIsLoading(true)
+    setError(null)
     Promise.all([api.health(), api.locations(), api.crops()])
       .then(([h, loc, crp]) => {
         setHealth(h)
@@ -39,15 +42,38 @@ export default function App() {
         setCrops(crp)
       })
       .catch((e) => setError(e.message))
+      .finally(() => setIsLoading(false))
+  }
+
+  useEffect(() => {
+    loadInitialData()
   }, [])
 
   return (
     <Layout currentView={view} onNavigate={(targetView) => setView(targetView)} health={health}>
-      {error && (
-        <div className="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 rounded-xl text-sm font-medium max-w-2xl w-full mb-6">
-          Could not reach backend: {error}
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center p-12 w-full max-w-xl bg-white rounded-2xl shadow-sm border border-slate-100 my-8">
+          <svg className="animate-spin h-10 w-10 text-emerald-600 mb-4" fill="none" viewBox="0 0 24 24" aria-label="Loading application data">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          <p className="text-sm font-semibold text-slate-700">Connecting to AgriTech Backend...</p>
+          <p className="text-xs text-slate-400 mt-1">Loading system locations, crop profiles, and adapter statuses.</p>
         </div>
-      )}
+      ) : error ? (
+        <div role="alert" className="bg-red-50 border-l-4 border-red-500 text-red-700 p-5 rounded-2xl shadow-sm max-w-2xl w-full mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div>
+            <h4 className="font-bold text-base text-red-800">Connection Failed</h4>
+            <p className="text-sm mt-0.5">{error}</p>
+          </div>
+          <button
+            onClick={loadInitialData}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs rounded-xl shadow transition duration-150 shrink-0"
+          >
+            Retry Connection
+          </button>
+        </div>
+      ) : null}
 
       {/* Conditional View Rendering */}
       {view === 'home' && (

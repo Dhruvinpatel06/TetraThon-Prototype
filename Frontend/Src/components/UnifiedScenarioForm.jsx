@@ -3,15 +3,12 @@ import { api } from '../api'
 import { useLeafUpload } from '../useLeafUpload'
 
 export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess, onCancel }) {
-  const [locationName, setLocationName] = useState('Ahmedabad')
-  const [cropName, setCropName] = useState('Cotton')
-  
-  // Default sowing date to 45 days ago
-  const defaultSowingDate = new Date(Date.now() - 45 * 86400000).toISOString().split('T')[0]
-  const [sowingDate, setSowingDate] = useState(defaultSowingDate)
+  const [locationName, setLocationName] = useState('')
+  const [cropName, setCropName] = useState('')
+  const [sowingDate, setSowingDate] = useState('')
   const [weatherObservation, setWeatherObservation] = useState('')
-  const [quantityQuintals, setQuantityQuintals] = useState('10.0')
-  const [storageCondition, setStorageCondition] = useState('warehouse')
+  const [quantityQuintals, setQuantityQuintals] = useState('')
+  const [storageCondition, setStorageCondition] = useState('')
 
   const { leafResult, isClassifying, handleLeafUpload } = useLeafUpload()
 
