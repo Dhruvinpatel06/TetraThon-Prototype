@@ -35,6 +35,8 @@ export const api = {
   postAdvisory: (data) => post('/api/advisory', data),
   getRules: (cropName) => get(`/api/rules?crop_name=${encodeURIComponent(cropName)}`),
   postPostHarvest: (data) => post('/api/post-harvest', data),
+  priceHistory: (crop, location) => get(`/api/price-history?crop=${encodeURIComponent(crop || '')}&location=${encodeURIComponent(location || '')}`),
+  spoilageCurve: (crop, quantity) => get(`/api/spoilage-curve?crop=${encodeURIComponent(crop || '')}&quantity=${encodeURIComponent(quantity || 10)}`),
   postLeafClassify: async (file) => {
     const formData = new FormData()
     formData.append('file', file)
