@@ -3,6 +3,7 @@ import { api } from '../api'
 import { useLeafUpload } from '../useLeafUpload'
 
 export default function UnifiedScenarioForm({ locations, crops, onSubmitSuccess, onCancel }) {
+  const today = new Date().toISOString().split('T')[0]
   const [locationName, setLocationName] = useState('')
   const [cropName, setCropName] = useState('')
   const [sowingDate, setSowingDate] = useState('')

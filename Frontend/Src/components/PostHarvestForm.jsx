@@ -150,7 +150,7 @@ export default function PostHarvestForm({ locations, crops, onSubmitSuccess, onC
               Transport Cost Preview ({locationName})
             </span>
             <p className="text-slate-600">
-              Estimated transport rate: ₹3.00/km per quintal (Min: ₹500). Total transport for {quantityQuintals}q across 25–65 km: <strong>₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 3 * 35)).toLocaleString('en-IN')} – ₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 3 * 65)).toLocaleString('en-IN')}</strong>.
+              Estimated transport rate: ₹5.00/km per quintal (Min: ₹500). Total transport for {quantityQuintals}q across 25–65 km: <strong>₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 5 * 35)).toLocaleString('en-IN')} – ₹{Math.max(500, Math.round(parseFloat(quantityQuintals) * 5 * 65)).toLocaleString('en-IN')}</strong>.
             </p>
           </div>
         )}

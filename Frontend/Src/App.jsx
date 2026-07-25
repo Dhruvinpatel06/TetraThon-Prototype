@@ -207,7 +207,7 @@ export default function App() {
         />
       )}
 
-      {view === 'results' && (
+      {view === 'results' && lastResult && (
         <AdvisoryResult
           result={lastResult}
           inputs={inputs}
@@ -229,7 +229,7 @@ export default function App() {
         />
       )}
 
-      {view === 'ph-results' && (
+      {view === 'ph-results' && lastPHResult && (
         <PostHarvestResult
           result={lastPHResult}
           inputs={phInputs}
