@@ -43,7 +43,7 @@ def test_generate_advisories_all_crops(sample_advisory_input):
     crops = ["Cotton", "Wheat", "Groundnut", "Tomato"]
     for crop in crops:
         sowing_date = (datetime.date.today() - datetime.timedelta(days=30)).isoformat()
-        advisories = generate_advisories("Anand", crop, sowing_date, "hot_dry")
+        advisories = generate_advisories("Anand", crop, sowing_date, "hot_and_dry")
         assert len(advisories) == 3
         types = {a["type"] for a in advisories}
         assert types == {"irrigation", "fertiliser", "pest"}

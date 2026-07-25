@@ -32,7 +32,7 @@ def test_api_advisory_post():
         "location_name": "Anand",
         "crop_name": "Cotton",
         "sowing_date": "2026-05-15",
-        "weather_observation": "hot_dry"
+        "weather_observation": "hot_and_dry"
     }
     response = client.post("/api/advisory", json=payload)
     assert response.status_code == 200

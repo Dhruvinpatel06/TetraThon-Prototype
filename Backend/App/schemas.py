@@ -27,7 +27,7 @@ class AdvisoryInput(BaseModel):
     location_name: str
     crop_name: str
     sowing_date: str  # ISO format YYYY-MM-DD
-    weather_observation: Literal["hot_dry", "hot_and_dry", "humid_cloudy", "light_rain", "heavy_rain"] | None = None
+    weather_observation: Literal["hot_and_dry", "humid_cloudy", "light_rain", "heavy_rain"] | None = None
 
 
 class AdvisoryItem(BaseModel):
