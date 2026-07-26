@@ -1,5 +1,5 @@
 {
-  "model_type": "MobileNetV2_Transfer_LeafClassifier",
+  "model_type": "MLP_LeafClassifier",
   "input_dim": 16,
   "hidden_dim": 32,
   "num_classes": 6,

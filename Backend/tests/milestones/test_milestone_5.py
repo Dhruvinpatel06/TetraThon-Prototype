@@ -2,8 +2,9 @@ import json
 import os
 from pathlib import Path
 
-API_JS_PATH = Path("Frontend/src/api.js")
-ADVISORY_FORM_PATH = Path("Frontend/src/components/AdvisoryForm.jsx")
+ROOT_DIR = Path(__file__).resolve().parents[3]
+API_JS_PATH = ROOT_DIR / "Frontend" / "src" / "api.js"
+ADVISORY_FORM_PATH = ROOT_DIR / "Frontend" / "src" / "components" / "AdvisoryForm.jsx"
 
 def test_milestone_5_frontend_advisory_form():
     """

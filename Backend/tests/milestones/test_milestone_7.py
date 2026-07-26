@@ -2,9 +2,10 @@ import json
 import os
 from pathlib import Path
 
-LEAF_RESULT_PATH = Path("Frontend/src/components/LeafResult.jsx")
-ADVISORY_RESULT_PATH = Path("Frontend/src/components/AdvisoryResult.jsx")
-DASHBOARD_PATH = Path("Frontend/src/components/Dashboard.jsx")
+ROOT_DIR = Path(__file__).resolve().parents[3]
+LEAF_RESULT_PATH = ROOT_DIR / "Frontend" / "src" / "components" / "LeafResult.jsx"
+ADVISORY_RESULT_PATH = ROOT_DIR / "Frontend" / "src" / "components" / "AdvisoryResult.jsx"
+DASHBOARD_PATH = ROOT_DIR / "Frontend" / "src" / "components" / "Dashboard.jsx"
 
 def test_milestone_7_leaf_result_display():
     """

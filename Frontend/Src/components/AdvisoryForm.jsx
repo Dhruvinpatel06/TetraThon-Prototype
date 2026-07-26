@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { api } from '../api'
+import { api } from '../api' // Uses api.postLeafClassify via useLeafUpload
 import { useLeafUpload } from '../useLeafUpload'
 
 export default function AdvisoryForm({ locations, crops, onSubmitSuccess, onCancel }) {

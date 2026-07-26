@@ -10,7 +10,7 @@ def test_milestone_1_dataset_and_class_names():
     2. Verify Backend/data/plantvillage_subset exists and contains all 6 class directories.
     3. Verify every image in each class directory can be loaded and verified without corruption.
     """
-    backend_dir = Path(__file__).parent
+    backend_dir = Path(__file__).resolve().parents[2]
     models_dir = backend_dir / "models"
     class_names_file = models_dir / "class_names.json"
 

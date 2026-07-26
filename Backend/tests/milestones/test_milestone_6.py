@@ -2,7 +2,8 @@ import json
 import os
 from pathlib import Path
 
-UNIFIED_FORM_PATH = Path("Frontend/src/components/UnifiedScenarioForm.jsx")
+ROOT_DIR = Path(__file__).resolve().parents[3]
+UNIFIED_FORM_PATH = ROOT_DIR / "Frontend" / "src" / "components" / "UnifiedScenarioForm.jsx"
 
 def test_milestone_6_unified_scenario_form():
     """

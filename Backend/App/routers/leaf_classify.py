@@ -14,7 +14,7 @@ ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
 MAX_FILE_SIZE = 10 * 1024 * 1024  # 10 MB
 
 @router.post("/leaf-classify")
-@limiter.limit("10/minute")
+@limiter.limit("600/minute")
 async def leaf_classify(request: Request, file: UploadFile = File(...)):
     if not file or not file.filename:
         raise HTTPException(status_code=400, detail="No file provided")
