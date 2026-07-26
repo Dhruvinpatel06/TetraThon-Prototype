@@ -83,9 +83,20 @@ except ImportError:
     HAS_PIL = False
 
 def preprocess_image(image_bytes: bytes, width: int = 224, height: int = 224) -> list[float]:
-    """Parse image bytes using PIL (if available) or pure Python BMP parser into RGB pixels, then extract features."""
-    pixels = []
+    """
+    Decode image bytes into RGB pixels and extract a normalized feature vector.
 
+    Supported formats (via PIL): JPEG, PNG, WEBP, BMP, and any format PIL recognises.
+    Falls back to a pure-Python 24-bit BMP parser when PIL is unavailable.
+    Raises ValueError for empty, corrupt, or non-image inputs so callers can
+    surface a clean HTTP 400 instead of a silently wrong prediction.
+    """
+    if not image_bytes:
+        raise ValueError("Image data is empty.")
+
+    pixels: list[tuple[int, int, int]] = []
+
+    # --- Path 1: PIL (preferred, handles JPEG / PNG / WEBP / BMP / etc.) ---
     if HAS_PIL:
         try:
             img = Image.open(BytesIO(image_bytes)).convert("RGB").resize((width, height))
@@ -93,39 +104,30 @@ def preprocess_image(image_bytes: bytes, width: int = 224, height: int = 224) ->
         except Exception:
             pixels = []
 
-    if len(pixels) == 0:
-        # Check if BMP image
+    # --- Path 2: Pure-Python 24-bit BMP parser (PIL-absent fallback only) ---
+    if not pixels:
         if image_bytes[:2] == b"BM" and len(image_bytes) >= 54:
-            magic, file_size, _, _, offset = struct.unpack("<2sIHHI", image_bytes[:14])
-            dib_size, w, h, planes, bpp = struct.unpack("<IiiHH", image_bytes[14:30])
-
-            if bpp == 24:
+            _, _, _, _, offset = struct.unpack("<2sIHHI", image_bytes[:14])
+            _, w, h, _, bpp = struct.unpack("<IiiHH", image_bytes[14:30])
+            if bpp == 24 and w > 0 and h > 0:
                 row_bytes = w * 3
                 padding = (4 - (row_bytes % 4)) % 4
+                stride = row_bytes + padding
                 for y in range(h - 1, -1, -1):
-                    row_start = offset + y * (row_bytes + padding)
+                    row_start = offset + y * stride
                     for x in range(w):
                         px_idx = row_start + x * 3
                         if px_idx + 2 < len(image_bytes):
-                            b = image_bytes[px_idx]
-                            g = image_bytes[px_idx + 1]
-                            r = image_bytes[px_idx + 2]
-                            pixels.append((r, g, b))
+                            b_val = image_bytes[px_idx]
+                            g_val = image_bytes[px_idx + 1]
+                            r_val = image_bytes[px_idx + 2]
+                            pixels.append((r_val, g_val, b_val))
 
-        # If non-BMP or unparsed, sample raw byte stream into RGB tuples
-        if len(pixels) == 0:
-            step = max(1, len(image_bytes) // (width * height * 3))
-            for i in range(0, min(len(image_bytes) - 2, width * height * 3 * step), 3 * step):
-                r = image_bytes[i]
-                g = image_bytes[i + 1]
-                b = image_bytes[i + 2]
-                pixels.append((r, g, b))
-
-        target_count = width * height
-        if len(pixels) < target_count:
-            pixels += [(128, 128, 128)] * (target_count - len(pixels))
-        else:
-            pixels = pixels[:target_count]
+    # --- No valid pixels decoded: input is corrupt / unsupported ---
+    if not pixels:
+        raise ValueError(
+            "Could not decode image. Ensure the file is a valid JPEG, PNG, BMP, or WEBP image."
+        )
 
     return extract_features(pixels, width, height)
 

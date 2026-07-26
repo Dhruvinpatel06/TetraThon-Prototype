@@ -41,6 +41,11 @@ async def leaf_classify(request: Request, file: UploadFile = File(...)):
         return result
     except HTTPException:
         raise
+    except ValueError as e:
+        # Raised by preprocess_image for corrupt / undecodable image data
+        logger.warning(f"Undecodable image upload rejected: {str(e)}")
+        raise HTTPException(status_code=400, detail=f"Invalid image: {str(e)}")
     except Exception as e:
         logger.error(f"Leaf classification failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Classification failed: {str(e)}")
+
