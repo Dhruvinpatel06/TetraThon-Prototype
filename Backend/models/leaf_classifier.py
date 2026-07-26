@@ -71,45 +71,61 @@ def _load_model():
 
     return _model_weights
 
-from models.ml_utils import extract_features, relu, softmax
+try:
+    from ..models.ml_utils import extract_features, relu, softmax
+except ImportError:
+    from models.ml_utils import extract_features, relu, softmax
+
+try:
+    from PIL import Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
 
 def preprocess_image(image_bytes: bytes, width: int = 224, height: int = 224) -> list[float]:
-    """Parse image bytes and extract 16 normalized feature elements using ml_utils."""
+    """Parse image bytes using PIL (if available) or pure Python BMP parser into RGB pixels, then extract features."""
     pixels = []
 
-    # Check if BMP image
-    if image_bytes[:2] == b"BM" and len(image_bytes) >= 54:
-        magic, file_size, _, _, offset = struct.unpack("<2sIHHI", image_bytes[:14])
-        dib_size, w, h, planes, bpp = struct.unpack("<IiiHH", image_bytes[14:30])
+    if HAS_PIL:
+        try:
+            img = Image.open(BytesIO(image_bytes)).convert("RGB").resize((width, height))
+            pixels = list(img.getdata())
+        except Exception:
+            pixels = []
 
-        if bpp == 24:
-            row_bytes = w * 3
-            padding = (4 - (row_bytes % 4)) % 4
-            for y in range(h - 1, -1, -1):
-                row_start = offset + y * (row_bytes + padding)
-                for x in range(w):
-                    px_idx = row_start + x * 3
-                    if px_idx + 2 < len(image_bytes):
-                        b = image_bytes[px_idx]
-                        g = image_bytes[px_idx + 1]
-                        r = image_bytes[px_idx + 2]
-                        pixels.append((r, g, b))
-
-    # If non-BMP or unparsed, sample raw byte stream as RGB approximation
     if len(pixels) == 0:
-        step = max(1, len(image_bytes) // (width * height * 3))
-        for i in range(0, min(len(image_bytes) - 2, width * height * 3 * step), 3 * step):
-            r = image_bytes[i]
-            g = image_bytes[i + 1]
-            b = image_bytes[i + 2]
-            pixels.append((r, g, b))
+        # Check if BMP image
+        if image_bytes[:2] == b"BM" and len(image_bytes) >= 54:
+            magic, file_size, _, _, offset = struct.unpack("<2sIHHI", image_bytes[:14])
+            dib_size, w, h, planes, bpp = struct.unpack("<IiiHH", image_bytes[14:30])
 
-    # Pad or truncate to target dimensions
-    target_count = width * height
-    if len(pixels) < target_count:
-        pixels += [(128, 128, 128)] * (target_count - len(pixels))
-    else:
-        pixels = pixels[:target_count]
+            if bpp == 24:
+                row_bytes = w * 3
+                padding = (4 - (row_bytes % 4)) % 4
+                for y in range(h - 1, -1, -1):
+                    row_start = offset + y * (row_bytes + padding)
+                    for x in range(w):
+                        px_idx = row_start + x * 3
+                        if px_idx + 2 < len(image_bytes):
+                            b = image_bytes[px_idx]
+                            g = image_bytes[px_idx + 1]
+                            r = image_bytes[px_idx + 2]
+                            pixels.append((r, g, b))
+
+        # If non-BMP or unparsed, sample raw byte stream into RGB tuples
+        if len(pixels) == 0:
+            step = max(1, len(image_bytes) // (width * height * 3))
+            for i in range(0, min(len(image_bytes) - 2, width * height * 3 * step), 3 * step):
+                r = image_bytes[i]
+                g = image_bytes[i + 1]
+                b = image_bytes[i + 2]
+                pixels.append((r, g, b))
+
+        target_count = width * height
+        if len(pixels) < target_count:
+            pixels += [(128, 128, 128)] * (target_count - len(pixels))
+        else:
+            pixels = pixels[:target_count]
 
     return extract_features(pixels, width, height)
 

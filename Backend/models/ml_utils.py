@@ -2,8 +2,22 @@ import math
 import struct
 from pathlib import Path
 
+try:
+    from PIL import Image
+    HAS_PIL = True
+except ImportError:
+    HAS_PIL = False
+
 def load_bmp_image(file_path: Path) -> tuple[int, int, list[tuple[int, int, int]]]:
-    """Load a 24-bit uncompressed BMP image in pure Python."""
+    """Load an image file using PIL (if available) or pure Python BMP fallback."""
+    if HAS_PIL:
+        try:
+            img = Image.open(file_path).convert("RGB").resize((224, 224))
+            pixels = list(img.getdata())
+            return 224, 224, pixels
+        except Exception:
+            pass
+
     with open(file_path, "rb") as f:
         data = f.read()
     
@@ -16,7 +30,6 @@ def load_bmp_image(file_path: Path) -> tuple[int, int, list[tuple[int, int, int]
     padding = (4 - (row_bytes % 4)) % 4
     
     pixels = []
-    # BMP stores rows bottom-to-top
     for y in range(height - 1, -1, -1):
         row_start = offset + y * (row_bytes + padding)
         row_pixels = []
