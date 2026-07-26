@@ -72,9 +72,9 @@ def _load_model():
     return _model_weights
 
 try:
-    from ..models.ml_utils import extract_features, relu, softmax
+    from ..models.ml_utils import extract_features, relu, softmax, parse_image_pixels
 except ImportError:
-    from models.ml_utils import extract_features, relu, softmax
+    from models.ml_utils import extract_features, relu, softmax, parse_image_pixels
 
 try:
     from PIL import Image
@@ -85,50 +85,9 @@ except ImportError:
 def preprocess_image(image_bytes: bytes, width: int = 224, height: int = 224) -> list[float]:
     """
     Decode image bytes into RGB pixels and extract a normalized feature vector.
-
-    Supported formats (via PIL): JPEG, PNG, WEBP, BMP, and any format PIL recognises.
-    Falls back to a pure-Python 24-bit BMP parser when PIL is unavailable.
-    Raises ValueError for empty, corrupt, or non-image inputs so callers can
-    surface a clean HTTP 400 instead of a silently wrong prediction.
+    Supports PNG, JPEG, WEBP, BMP natively via pure Python decoders or PIL.
     """
-    if not image_bytes:
-        raise ValueError("Image data is empty.")
-
-    pixels: list[tuple[int, int, int]] = []
-
-    # --- Path 1: PIL (preferred, handles JPEG / PNG / WEBP / BMP / etc.) ---
-    if HAS_PIL:
-        try:
-            img = Image.open(BytesIO(image_bytes)).convert("RGB").resize((width, height))
-            pixels = list(img.getdata())
-        except Exception:
-            pixels = []
-
-    # --- Path 2: Pure-Python 24-bit BMP parser (PIL-absent fallback only) ---
-    if not pixels:
-        if image_bytes[:2] == b"BM" and len(image_bytes) >= 54:
-            _, _, _, _, offset = struct.unpack("<2sIHHI", image_bytes[:14])
-            _, w, h, _, bpp = struct.unpack("<IiiHH", image_bytes[14:30])
-            if bpp == 24 and w > 0 and h > 0:
-                row_bytes = w * 3
-                padding = (4 - (row_bytes % 4)) % 4
-                stride = row_bytes + padding
-                for y in range(h - 1, -1, -1):
-                    row_start = offset + y * stride
-                    for x in range(w):
-                        px_idx = row_start + x * 3
-                        if px_idx + 2 < len(image_bytes):
-                            b_val = image_bytes[px_idx]
-                            g_val = image_bytes[px_idx + 1]
-                            r_val = image_bytes[px_idx + 2]
-                            pixels.append((r_val, g_val, b_val))
-
-    # --- No valid pixels decoded: input is corrupt / unsupported ---
-    if not pixels:
-        raise ValueError(
-            "Could not decode image. Ensure the file is a valid JPEG, PNG, BMP, or WEBP image."
-        )
-
+    pixels = parse_image_pixels(image_bytes, width, height)
     return extract_features(pixels, width, height)
 
 def classify(image_bytes: bytes) -> dict:

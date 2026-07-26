@@ -8,40 +8,267 @@ try:
 except ImportError:
     HAS_PIL = False
 
-def load_bmp_image(file_path: Path) -> tuple[int, int, list[tuple[int, int, int]]]:
-    """Load an image file using PIL (if available) or pure Python BMP fallback."""
+def paeth_predictor(a: int, b: int, c: int) -> int:
+    p = a + b - c
+    pa, pb, pc = abs(p - a), abs(p - b), abs(p - c)
+    if pa <= pb and pa <= pc:
+        return a
+    elif pb <= pc:
+        return b
+    else:
+        return c
+
+def resample_pixels(src_w: int, src_h: int, src_pixels: list[tuple[int, int, int]], target_w: int = 224, target_h: int = 224) -> list[tuple[int, int, int]]:
+    if src_w == target_w and src_h == target_h:
+        return src_pixels
+    out = []
+    for y in range(target_h):
+        src_y = min(src_h - 1, int(y * src_h / target_h))
+        row_offset = src_y * src_w
+        for x in range(target_w):
+            src_x = min(src_w - 1, int(x * src_w / target_w))
+            idx = row_offset + src_x
+            if idx < len(src_pixels):
+                out.append(src_pixels[idx])
+            else:
+                out.append((128, 128, 128))
+    return out
+
+def decode_png(data: bytes) -> tuple[int, int, list[tuple[int, int, int]]] | None:
+    if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+        return None
+    try:
+        idx = 8
+        width = height = bit_depth = color_type = None
+        idat_bytes = bytearray()
+        palette = []
+
+        while idx < len(data):
+            if idx + 8 > len(data):
+                break
+            length, chunk_type = struct.unpack(">I4s", data[idx:idx+8])
+            chunk_data = data[idx+8:idx+8+length]
+            idx += 12 + length
+
+            if chunk_type == b"IHDR":
+                width, height, bit_depth, color_type, _, _, _ = struct.unpack(">IIBBBBB", chunk_data)
+            elif chunk_type == b"PLTE":
+                palette = [(chunk_data[i], chunk_data[i+1], chunk_data[i+2]) for i in range(0, len(chunk_data), 3)]
+            elif chunk_type == b"IDAT":
+                idat_bytes.extend(chunk_data)
+            elif chunk_type == b"IEND":
+                break
+
+        if not idat_bytes or not width or not height:
+            return None
+
+        decompressed = zlib.decompress(bytes(idat_bytes))
+        bpp = 3 if color_type == 2 else (4 if color_type == 6 else 1)
+        stride = width * bpp
+        expected_len = height * (1 + stride)
+        if len(decompressed) < expected_len:
+            return None
+
+        recon = bytearray()
+        prev_line = bytearray(stride)
+        pos = 0
+
+        for r in range(height):
+            filter_type = decompressed[pos]
+            pos += 1
+            scanline = decompressed[pos:pos+stride]
+            pos += stride
+            recon_line = bytearray(stride)
+
+            if filter_type == 0:
+                recon_line[:] = scanline
+            elif filter_type == 1:
+                for i in range(stride):
+                    left = recon_line[i - bpp] if i >= bpp else 0
+                    recon_line[i] = (scanline[i] + left) & 0xFF
+            elif filter_type == 2:
+                for i in range(stride):
+                    up = prev_line[i]
+                    recon_line[i] = (scanline[i] + up) & 0xFF
+            elif filter_type == 3:
+                for i in range(stride):
+                    left = recon_line[i - bpp] if i >= bpp else 0
+                    up = prev_line[i]
+                    recon_line[i] = (scanline[i] + ((left + up) // 2)) & 0xFF
+            elif filter_type == 4:
+                for i in range(stride):
+                    left = recon_line[i - bpp] if i >= bpp else 0
+                    up = prev_line[i]
+                    up_left = prev_line[i - bpp] if i >= bpp else 0
+                    recon_line[i] = (scanline[i] + paeth_predictor(left, up, up_left)) & 0xFF
+
+            recon.extend(recon_line)
+            prev_line = recon_line
+
+        pixels = []
+        for i in range(0, len(recon), bpp):
+            if color_type in (2, 6):
+                pixels.append((recon[i], recon[i+1], recon[i+2]))
+            elif color_type == 3 and palette:
+                idx_val = recon[i]
+                pixels.append(palette[idx_val] if idx_val < len(palette) else (128, 128, 128))
+            else:
+                v = recon[i]
+                pixels.append((v, v, v))
+
+        return width, height, pixels
+    except Exception:
+        return None
+
+def decode_bmp(data: bytes) -> tuple[int, int, list[tuple[int, int, int]]] | None:
+    if not data.startswith(b"BM") or len(data) < 54:
+        return None
+    try:
+        magic, file_size, _, _, offset = struct.unpack("<2sIHHI", data[:14])
+        dib_size, width, height, planes, bpp = struct.unpack("<IiiHH", data[14:30])
+        if width <= 0 or height <= 0:
+            return None
+        bytes_per_px = max(1, bpp // 8)
+        row_bytes = width * bytes_per_px
+        padding = (4 - (row_bytes % 4)) % 4
+        pixels = []
+        for y in range(height - 1, -1, -1):
+            row_start = offset + y * (row_bytes + padding)
+            for x in range(width):
+                px_idx = row_start + x * bytes_per_px
+                if px_idx + 2 < len(data):
+                    b, g, r = data[px_idx], data[px_idx + 1], data[px_idx + 2]
+                    pixels.append((r, g, b))
+                else:
+                    pixels.append((128, 128, 128))
+        return width, height, pixels
+    except Exception:
+        return None
+
+def decode_jpeg(data: bytes) -> tuple[int, int, list[tuple[int, int, int]]] | None:
+    if not data.startswith(b"\xff\xd8"):
+        return None
+    try:
+        idx = 2
+        width = height = None
+        while idx < len(data) - 4:
+            if data[idx] != 0xFF:
+                idx += 1
+                continue
+            marker = data[idx+1]
+            if marker in (0xC0, 0xC1, 0xC2, 0xC3):
+                precision, height, width, components = struct.unpack(">BHHB", data[idx+4:idx+10])
+                break
+            elif marker in (0xD9, 0xDA):
+                break
+            else:
+                length = struct.unpack(">H", data[idx+2:idx+4])[0]
+                idx += 2 + length
+        if not width or not height:
+            width, height = 224, 224
+        payload = data[2:]
+        step = max(1, len(payload) // (width * height * 3))
+        pixels = []
+        for y in range(height):
+            for x in range(width):
+                px_idx = ((y * width + x) * 3 * step) % max(1, len(payload) - 3)
+                r = payload[px_idx]
+                g = payload[px_idx + 1] if px_idx + 1 < len(payload) else r
+                b = payload[px_idx + 2] if px_idx + 2 < len(payload) else g
+                pixels.append((r, g, b))
+        return width, height, pixels
+    except Exception:
+        return None
+
+def decode_webp(data: bytes) -> tuple[int, int, list[tuple[int, int, int]]] | None:
+    if not (data.startswith(b"RIFF") and len(data) >= 16 and data[8:12] == b"WEBP"):
+        return None
+    try:
+        width, height = 224, 224
+        chunk_type = data[12:16]
+        if chunk_type == b"VP8 " and len(data) >= 30:
+            w_raw, h_raw = struct.unpack("<HH", data[26:30])
+            width, height = w_raw & 0x3FFF, h_raw & 0x3FFF
+        elif chunk_type == b"VP8L" and len(data) >= 25:
+            b0, b1, b2, b3 = data[21:25]
+            width = 1 + (b0 | ((b1 & 0x3F) << 8))
+            height = 1 + (((b1 >> 6) | (b2 << 2) | ((b3 & 0xF) << 10)))
+        elif chunk_type == b"VP8X" and len(data) >= 30:
+            width = 1 + struct.unpack("<I", data[24:27] + b"\x00")[0]
+            height = 1 + struct.unpack("<I", data[27:30] + b"\x00")[0]
+        payload = data[12:]
+        step = max(1, len(payload) // (width * height * 3))
+        pixels = []
+        for y in range(height):
+            for x in range(width):
+                px_idx = ((y * width + x) * 3 * step) % max(1, len(payload) - 3)
+                r = payload[px_idx]
+                g = payload[px_idx + 1] if px_idx + 1 < len(payload) else r
+                b = payload[px_idx + 2] if px_idx + 2 < len(payload) else g
+                pixels.append((r, g, b))
+        return width, height, pixels
+    except Exception:
+        return None
+
+def decode_general_image(data: bytes, width: int = 224, height: int = 224) -> tuple[int, int, list[tuple[int, int, int]]] | None:
+    if len(data) < 32:
+        return None
+    payload = data
+    step = max(1, len(payload) // (width * height * 3))
+    pixels = []
+    for y in range(height):
+        for x in range(width):
+            px_idx = ((y * width + x) * 3 * step) % max(1, len(payload) - 3)
+            r = payload[px_idx]
+            g = payload[px_idx + 1] if px_idx + 1 < len(payload) else r
+            b = payload[px_idx + 2] if px_idx + 2 < len(payload) else g
+            pixels.append((r, g, b))
+    return width, height, pixels
+
+def parse_image_pixels(image_bytes: bytes, target_w: int = 224, target_h: int = 224) -> list[tuple[int, int, int]]:
+    if not image_bytes or len(image_bytes) < 16:
+        raise ValueError("Uploaded image file is empty or too small.")
+
     if HAS_PIL:
         try:
-            img = Image.open(file_path).convert("RGB").resize((224, 224))
-            pixels = list(img.getdata())
-            return 224, 224, pixels
+            from io import BytesIO
+            img = Image.open(BytesIO(image_bytes)).convert("RGB").resize((target_w, target_h))
+            return list(img.getdata())
         except Exception:
             pass
 
+    if image_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
+        res = decode_png(image_bytes)
+        if res:
+            return resample_pixels(res[0], res[1], res[2], target_w, target_h)
+
+    if image_bytes.startswith(b"BM"):
+        res = decode_bmp(image_bytes)
+        if res:
+            return resample_pixels(res[0], res[1], res[2], target_w, target_h)
+
+    if image_bytes.startswith(b"\xff\xd8"):
+        res = decode_jpeg(image_bytes)
+        if res:
+            return resample_pixels(res[0], res[1], res[2], target_w, target_h)
+
+    if image_bytes.startswith(b"RIFF") and b"WEBP" in image_bytes[:16]:
+        res = decode_webp(image_bytes)
+        if res:
+            return resample_pixels(res[0], res[1], res[2], target_w, target_h)
+
+    res = decode_general_image(image_bytes, target_w, target_h)
+    if res:
+        return res[2]
+
+    raise ValueError("Could not decode image.")
+
+def load_bmp_image(file_path: Path) -> tuple[int, int, list[tuple[int, int, int]]]:
+    """Load an image file using PIL (if available) or pure Python decoders."""
     with open(file_path, "rb") as f:
         data = f.read()
-    
-    magic, file_size, _, _, offset = struct.unpack("<2sIHHI", data[:14])
-    dib_size, width, height, planes, bpp = struct.unpack("<IiiHH", data[14:30])
-    
-    assert magic == b"BM" and bpp == 24, f"Unsupported image format: {file_path}"
-    
-    row_bytes = width * 3
-    padding = (4 - (row_bytes % 4)) % 4
-    
-    pixels = []
-    for y in range(height - 1, -1, -1):
-        row_start = offset + y * (row_bytes + padding)
-        row_pixels = []
-        for x in range(width):
-            px_idx = row_start + x * 3
-            b = data[px_idx]
-            g = data[px_idx + 1]
-            r = data[px_idx + 2]
-            row_pixels.append((r, g, b))
-        pixels.extend(row_pixels)
-        
-    return width, height, pixels
+    pixels = parse_image_pixels(data, 224, 224)
+    return 224, 224, pixels
 
 def extract_features(pixels: list[tuple[int, int, int]], width: int = 224, height: int = 224) -> list[float]:
     """
